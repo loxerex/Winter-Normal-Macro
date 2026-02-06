@@ -10,7 +10,7 @@ added CTM flags,
 for directions('1') and directions('2'), you can add CTM = True to use the click to move version, good for low end / laggy machines
 Added it so you can use what ever unit you want from caloric stone
 
-USE_WD = True - use world destroyer
+USE_WD = True - use world destroyer \n
 USE_DIO = False - built in dio thing instead
 USE_AINZ_UNIT = "" - name of the unit
 MONARCH_AINZ_PLACEMENT = False - Gets monarch for the unit you place with caloric sone
