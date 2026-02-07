@@ -496,598 +496,599 @@ def main():
     start_of_run = datetime.now()
     num_runs = 0  
     while True:
-        global g_toggle
-        global Unit_Placements_Left
-        if g_toggle:
-            if False: # Toggle setting up camera (this is just place unit + top down view + sell + lookout + return to spawn)
-                if first_run:
-                    quick_rts()
-                    first_run = False
-                    wait_start()
-                    keyboard.press('o')
-                    time.sleep(1)
-                    keyboard.release('o')
-                    click(835, 226, delay=0.2)
-                    directions('setup', '')
-                    avM.restart_match()
-            # Reset all placement counts:
-            Reset_Placements = {
-                "Ainz": 1,
-                'Beni': 3,
-                'Rukia': 3,
-                'Mage': 3,
-                'Escanor': 1,
-                'Hero': 3,
-                'Kuzan':4,
-                'Kag':1
-            }   
+        while True:
+            global g_toggle
             global Unit_Placements_Left
-            Unit_Placements_Left = Reset_Placements.copy()
-            
-            print("Starting new match")
-            wait_start()
-            quick_rts()
-            # Set up first 2 rabbits
-            directions('1', 'rabbit')
-            keyboard.press_and_release('e')
-            keyboard.press_and_release('e')
-            quick_rts()
-            click(835, 226, delay=0.2) # Start Match
-            
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            place_unit('Bunny', rabbit_pos[0], close=True)
-            place_unit('Bunny', rabbit_pos[1], close=True)
-            
-            # get third
-            directions('1', 'rabbit')
-            keyboard.press_and_release('e')
-            quick_rts()
-            place_unit('Bunny', rabbit_pos[2], close=True)
-            
-            #Start farms - speedwagon
-            directions('2', 'speed')
-            keyboard.press_and_release('e')
-            keyboard.press_and_release('e')
-            keyboard.press_and_release('e')
-            place_unit('Speed', speed_pos[0], close=True)
-            place_unit('Speed', speed_pos[1], close=True)
-            place_unit('Speed', speed_pos[2], close=True)
-            for pos in speed_pos:
+            if g_toggle:
+                if False: # Toggle setting up camera (this is just place unit + top down view + sell + lookout + return to spawn)
+                    if first_run:
+                        quick_rts()
+                        first_run = False
+                        wait_start()
+                        keyboard.press('o')
+                        time.sleep(1)
+                        keyboard.release('o')
+                        click(835, 226, delay=0.2)
+                        directions('setup', '')
+                        avM.restart_match()
+                # Reset all placement counts:
+                Reset_Placements = {
+                    "Ainz": 1,
+                    'Beni': 3,
+                    'Rukia': 3,
+                    'Mage': 3,
+                    'Escanor': 1,
+                    'Hero': 3,
+                    'Kuzan':4,
+                    'Kag':1
+                }   
+                global Unit_Placements_Left
+                Unit_Placements_Left = Reset_Placements.copy()
+                
+                print("Starting new match")
+                wait_start()
+                quick_rts()
+                # Set up first 2 rabbits
+                directions('1', 'rabbit')
+                keyboard.press_and_release('e')
+                keyboard.press_and_release('e')
+                quick_rts()
+                click(835, 226, delay=0.2) # Start Match
+                
                 if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
                     break
-                click(pos[0], pos[1], delay=0.2)
+                place_unit('Bunny', rabbit_pos[0], close=True)
+                place_unit('Bunny', rabbit_pos[1], close=True)
+                
+                # get third
+                directions('1', 'rabbit')
+                keyboard.press_and_release('e')
+                quick_rts()
+                place_unit('Bunny', rabbit_pos[2], close=True)
+                
+                #Start farms - speedwagon
+                directions('2', 'speed')
+                keyboard.press_and_release('e')
+                keyboard.press_and_release('e')
+                keyboard.press_and_release('e')
+                place_unit('Speed', speed_pos[0], close=True)
+                place_unit('Speed', speed_pos[1], close=True)
+                place_unit('Speed', speed_pos[2], close=True)
+                for pos in speed_pos:
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    click(pos[0], pos[1], delay=0.2)
+                    keyboard.press_and_release('z')
+                    time.sleep(0.5)
+                click(607, 381, delay=0.2)
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                # Wait till max money on all speedwagon
+                speed_max = [False, False, False]
+                while not all(speed_max):
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    if not g_toggle:
+                        break
+                    for i, pos in enumerate(speed_pos):
+                        if speed_max[i] != True:
+                            click(pos[0],pos[1],delay=0.2)
+                            time.sleep(0.6)
+                            if bt.does_exist('Unit_Maxed.png',confidence=0.8,grayscale=True):
+                                speed_max[i] = True
+                            click(607, 381, delay=0.2)
+                    time.sleep(1)
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break  
+                # Tak's placement + max
+                keyboard.press('w')
+                time.sleep(0.8)
+                keyboard.release('w')
+                # Press e untill tak is bought
+                while not bt.does_exist('Winter\\Tak_hb.png', confidence=0.7, grayscale=False):
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    keyboard.press_and_release('e')
+                    time.sleep(0.2)
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break    
+                place_unit("Tak", (853, 604))
                 keyboard.press_and_release('z')
                 time.sleep(0.5)
-            click(607, 381, delay=0.2)
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            # Wait till max money on all speedwagon
-            speed_max = [False, False, False]
-            while not all(speed_max):
+                #DIR_NAMICARD
+                click(382, 268, delay=0.2, right_click=True) # Goes to nami's card
+                while not bt.does_exist('Unit_Maxed.png',confidence=0.8,grayscale=True): # Wait till tak is max
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    time.sleep(0.5)
+                click(607, 381, delay=0.2)
                 if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
                     break
-                if not g_toggle:
-                    break
-                for i, pos in enumerate(speed_pos):
-                    if speed_max[i] != True:
-                        click(pos[0],pos[1],delay=0.2)
-                        time.sleep(0.6)
-                        if bt.does_exist('Unit_Maxed.png',confidence=0.8,grayscale=True):
-                            speed_max[i] = True
-                        click(607, 381, delay=0.2)
+                
+                #Nami
+                while not bt.does_exist('Winter\\Nami_hb.png', confidence=0.7, grayscale=False, region=(528, 788, 749, 860)): # Buys nami's card
+                    keyboard.press_and_release('e')
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    time.sleep(0.2)
+                quick_rts()
+                place_unit('Nami',(755, 524), region=(528, 788, 749, 860)) # Nami placement
+                keyboard.press_and_release('z')
+                # Go to upgrader for fortune
+                directions('4')
+                upgrader('fortune')
+                quick_rts()
+                
+                # Start auto upgrading first rabbit
+                secure_select(rabbit_pos[0])
+                time.sleep(0.5)
+                keyboard.press_and_release('z')
+                click(607, 381, delay=0.2)
+                
+                # get +100% dmg upgrade
+                directions('4')
+                upgrader('damage')
+                quick_rts()
+                
+                # Start auto upgrading rabbit 1 & 2
+                secure_select(rabbit_pos[1])
+                time.sleep(0.5)
+                keyboard.press_and_release('z')
+                click(607, 381, delay=0.2)
                 time.sleep(1)
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break  
-            # Tak's placement + max
-            keyboard.press('w')
-            time.sleep(0.8)
-            keyboard.release('w')
-            # Press e untill tak is bought
-            while not bt.does_exist('Winter\\Tak_hb.png', confidence=0.7, grayscale=False):
-                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                    break
-                keyboard.press_and_release('e')
-                time.sleep(0.2)
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break    
-            place_unit("Tak", (853, 604))
-            keyboard.press_and_release('z')
-            time.sleep(0.5)
-            #DIR_NAMICARD
-            click(382, 268, delay=0.2, right_click=True) # Goes to nami's card
-            while not bt.does_exist('Unit_Maxed.png',confidence=0.8,grayscale=True): # Wait till tak is max
-                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                    break
+                secure_select(rabbit_pos[2])
                 time.sleep(0.5)
-            click(607, 381, delay=0.2)
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            
-            #Nami
-            while not bt.does_exist('Winter\\Nami_hb.png', confidence=0.7, grayscale=False, region=(528, 788, 749, 860)): # Buys nami's card
-                keyboard.press_and_release('e')
-                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                    break
-                time.sleep(0.2)
-            quick_rts()
-            place_unit('Nami',(755, 524), region=(528, 788, 749, 860)) # Nami placement
-            keyboard.press_and_release('z')
-            # Go to upgrader for fortune
-            directions('4')
-            upgrader('fortune')
-            quick_rts()
-            
-            # Start auto upgrading first rabbit
-            secure_select(rabbit_pos[0])
-            time.sleep(0.5)
-            keyboard.press_and_release('z')
-            click(607, 381, delay=0.2)
-            
-            # get +100% dmg upgrade
-            directions('4')
-            upgrader('damage')
-            quick_rts()
-            
-            # Start auto upgrading rabbit 1 & 2
-            secure_select(rabbit_pos[1])
-            time.sleep(0.5)
-            keyboard.press_and_release('z')
-            click(607, 381, delay=0.2)
-            time.sleep(1)
-            secure_select(rabbit_pos[2])
-            time.sleep(0.5)
-            keyboard.press_and_release('z')
-            click(607, 381, delay=0.2)
-            time.sleep(1)
-            
-            # Get first monarch
-            directions('5')
-            buy_monarch()
-            quick_rts()
-            time.sleep(1)
-            secure_select(rabbit_pos[0])
-            
-            # Wave 19 lane unlocks for 20% boost
-            wave_19 = False
-            while not wave_19:
-                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                    break
-                if avM.get_wave()>=19:
-                    #DIR_BUYMAINLANES
-                    keyboard.press('d')
-                    time.sleep(1)
-                    keyboard.release('d')
-                    keyboard.press_and_release('e')
-                    keyboard.press_and_release('e')
-                    keyboard.press('w')
-                    time.sleep(0.6)
-                    keyboard.release('w')
-                    keyboard.press_and_release('e')
-                    keyboard.press_and_release('e')
-                    wave_19=True
-                if not g_toggle:
-                    break
-                time.sleep(0.5)
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            # Get 2nd and 3rd bunny monarch'd
-            quick_rts()
-            directions('5')
-            buy_monarch()
-            quick_rts()
-            time.sleep(1)
-            secure_select(rabbit_pos[1])
-            time.sleep(1)
-            directions('5')
-            buy_monarch()
-            quick_rts()
-            time.sleep(1)
-            secure_select(rabbit_pos[2])
-            
-            # Get all upgrades
-            directions('4')
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            upgrader('range')
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            upgrader('speed')
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            upgrader('armor')
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            quick_rts()
-            directions('3')
-            
-            Ben_Upgraded = False
-            Erza_Upgraded = False
-            
-            
-            # Lucky box
-            gamble_done = False
-            g_toggle= True
-            ainzplaced=False
-            while not gamble_done:
-                keyboard.press_and_release('e')
-                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                    break
-                if bt.does_exist("Winter\\Full_Bar.png",confidence=0.7,grayscale=True, region=(493, 543, 1024, 785)) or bt.does_exist("Winter\\NO_YEN.png",confidence=0.7,grayscale=True,  region=(493, 543, 1024, 785)):
-                    quick_rts()
-                    time.sleep(3)
-                    place_hotbar_units()
-                    directions('3')
-                if not Erza_Upgraded:
-                    erza_buffer = Unit_Positions['Mage']
-                    if Unit_Placements_Left['Mage'] == 0:
-                        quick_rts()
+                keyboard.press_and_release('z')
+                click(607, 381, delay=0.2)
+                time.sleep(1)
+                
+                # Get first monarch
+                directions('5')
+                buy_monarch()
+                quick_rts()
+                time.sleep(1)
+                secure_select(rabbit_pos[0])
+                
+                # Wave 19 lane unlocks for 20% boost
+                wave_19 = False
+                while not wave_19:
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    if avM.get_wave()>=19:
+                        #DIR_BUYMAINLANES
+                        keyboard.press('d')
                         time.sleep(1)
-                        # BUffer
-                        secure_select(erza_buffer[0])
-                        time.sleep(8)
-                        click(356,655)
-                        time.sleep(0.8)
-                        click(647, 449,delay=0.2)
-                        while not bt.does_exist('Winter\\Erza_Armor.png',confidence=0.8,grayscale=True):
-                            click(1015,690,delay=0.2)
-                            time.sleep(0.5)
-                        click(752, 548,delay=0.2)
-                        time.sleep(0.5)
-                        click(1140, 290,delay=0.2)
-                        time.sleep(0.5)
-                        click(607, 381, delay=0.2)
-                            
-                        #Duelist 1
-                        secure_select(erza_buffer[1])
-                        time.sleep(0.8)
-                        keyboard.press_and_release('z')
-                        click(647, 449,delay=0.2)
-                        while not bt.does_exist('Winter\\Erza_Armor.png',confidence=0.8,grayscale=True):
-                            click(747, 690,delay=0.2)
-                            time.sleep(0.5)
-                        click(752, 548,delay=0.2)
-                        time.sleep(0.5)
-                        click(1140, 290,delay=0.2)
-                        set_boss()
-                        time.sleep(0.5)
-                        
-                        #Duelist 2
-                        secure_select(erza_buffer[2])
-                        time.sleep(0.8)
-                        click(647, 449,delay=0.2)
-                        keyboard.press_and_release('z')
-                        while not bt.does_exist('Winter\\Erza_Armor.png',confidence=0.8,grayscale=True):
-                            click(747, 690,delay=0.2)
-                            time.sleep(0.5)
-                        click(752, 548,delay=0.2)
-                        time.sleep(0.5)
-                        click(1140, 290,delay=0.2)
-                        set_boss()
-                        time.sleep(0.5)
-                        click(607, 381, delay=0.2)
-                        
-                        directions('5')
-                        buy_monarch()
+                        keyboard.release('d')
+                        keyboard.press_and_release('e')
+                        keyboard.press_and_release('e')
+                        keyboard.press('w')
+                        time.sleep(0.6)
+                        keyboard.release('w')
+                        keyboard.press_and_release('e')
+                        keyboard.press_and_release('e')
+                        wave_19=True
+                    if not g_toggle:
+                        break
+                    time.sleep(0.5)
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                # Get 2nd and 3rd bunny monarch'd
+                quick_rts()
+                directions('5')
+                buy_monarch()
+                quick_rts()
+                time.sleep(1)
+                secure_select(rabbit_pos[1])
+                time.sleep(1)
+                directions('5')
+                buy_monarch()
+                quick_rts()
+                time.sleep(1)
+                secure_select(rabbit_pos[2])
+                
+                # Get all upgrades
+                directions('4')
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                upgrader('range')
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                upgrader('speed')
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                upgrader('armor')
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                quick_rts()
+                directions('3')
+                
+                Ben_Upgraded = False
+                Erza_Upgraded = False
+                
+                
+                # Lucky box
+                gamble_done = False
+                g_toggle= True
+                ainzplaced=False
+                while not gamble_done:
+                    keyboard.press_and_release('e')
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    if bt.does_exist("Winter\\Full_Bar.png",confidence=0.7,grayscale=True, region=(493, 543, 1024, 785)) or bt.does_exist("Winter\\NO_YEN.png",confidence=0.7,grayscale=True,  region=(493, 543, 1024, 785)):
                         quick_rts()
-                        click(erza_buffer[1][0],erza_buffer[1][1],delay=0.2)
-                        time.sleep(0.5)
-                        
-                        directions('5')
-                        buy_monarch()
-                        quick_rts()
-                        click(erza_buffer[2][0],erza_buffer[2][1],delay=0.2)
-                        time.sleep(0.5)
-                        Erza_Upgraded = True
-                        # more gamble
+                        time.sleep(3)
+                        place_hotbar_units()
                         directions('3')
-                if not Ben_Upgraded:
-                    if Unit_Placements_Left['Beni'] == 0:
-                        quick_rts()
-                        time.sleep(1)
-                        for ben in Unit_Positions['Beni']:
-                            click(ben[0],ben[1],delay=0.2)
-                            secure_select((ben[0],ben[1]))
+                    if not Erza_Upgraded:
+                        erza_buffer = Unit_Positions['Mage']
+                        if Unit_Placements_Left['Mage'] == 0:
+                            quick_rts()
+                            time.sleep(1)
+                            # BUffer
+                            secure_select(erza_buffer[0])
+                            time.sleep(8)
+                            click(356,655)
+                            time.sleep(0.8)
+                            click(647, 449,delay=0.2)
+                            while not bt.does_exist('Winter\\Erza_Armor.png',confidence=0.8,grayscale=True):
+                                click(1015,690,delay=0.2)
+                                time.sleep(0.5)
+                            click(752, 548,delay=0.2)
                             time.sleep(0.5)
+                            click(1140, 290,delay=0.2)
+                            time.sleep(0.5)
+                            click(607, 381, delay=0.2)
+                                
+                            #Duelist 1
+                            secure_select(erza_buffer[1])
+                            time.sleep(0.8)
                             keyboard.press_and_release('z')
+                            click(647, 449,delay=0.2)
+                            while not bt.does_exist('Winter\\Erza_Armor.png',confidence=0.8,grayscale=True):
+                                click(747, 690,delay=0.2)
+                                time.sleep(0.5)
+                            click(752, 548,delay=0.2)
+                            time.sleep(0.5)
+                            click(1140, 290,delay=0.2)
+                            set_boss()
+                            time.sleep(0.5)
+                            
+                            #Duelist 2
+                            secure_select(erza_buffer[2])
+                            time.sleep(0.8)
+                            click(647, 449,delay=0.2)
+                            keyboard.press_and_release('z')
+                            while not bt.does_exist('Winter\\Erza_Armor.png',confidence=0.8,grayscale=True):
+                                click(747, 690,delay=0.2)
+                                time.sleep(0.5)
+                            click(752, 548,delay=0.2)
+                            time.sleep(0.5)
+                            click(1140, 290,delay=0.2)
                             set_boss()
                             time.sleep(0.5)
                             click(607, 381, delay=0.2)
+                            
                             directions('5')
                             buy_monarch()
                             quick_rts()
+                            click(erza_buffer[1][0],erza_buffer[1][1],delay=0.2)
                             time.sleep(0.5)
-                            secure_select((ben[0],ben[1]))
+                            
+                            directions('5')
+                            buy_monarch()
+                            quick_rts()
+                            click(erza_buffer[2][0],erza_buffer[2][1],delay=0.2)
+                            time.sleep(0.5)
+                            Erza_Upgraded = True
+                            # more gamble
+                            directions('3')
+                    if not Ben_Upgraded:
+                        if Unit_Placements_Left['Beni'] == 0:
+                            quick_rts()
+                            time.sleep(1)
+                            for ben in Unit_Positions['Beni']:
+                                click(ben[0],ben[1],delay=0.2)
+                                secure_select((ben[0],ben[1]))
+                                time.sleep(0.5)
+                                keyboard.press_and_release('z')
+                                set_boss()
+                                time.sleep(0.5)
+                                click(607, 381, delay=0.2)
+                                directions('5')
+                                buy_monarch()
+                                quick_rts()
+                                time.sleep(0.5)
+                                secure_select((ben[0],ben[1]))
+                                time.sleep(0.5)
+                                click(607, 381, delay=0.2)
+                            Ben_Upgraded = True
+                            # more gamble
+                            directions('3')
+                    if not ainzplaced:
+                        if Unit_Placements_Left['Ainz'] == 0: # Ainz thingy
+                            ainzplaced = True
+                            quick_rts()
+                            time.sleep(1)
+                            ainz_pos = Unit_Positions['Ainz']
+                            pos = (876, 465)
+                            secure_select((ainz_pos[0]))
+                            time.sleep(0.5)
+                            if USE_WD:
+                                ainz_setup(unit="world des")
+                            elif USE_DIO:
+                                ainz_setup(unit="god")
+                            else:
+                                ainz_setup(unit=USE_AINZ_UNIT)
+                            click(pos[0], pos[1], delay=0.67) # Place world destroyer + auto upgrade
+                            time.sleep(0.5)
+                            while not pyautogui.pixel(607, 381) == (255,255,255):
+                                if g_toggle == False:
+                                    break
+                                click(pos[0], pos[1], delay=0.67)
+                                time.sleep(0.5)
+                            time.sleep(1)
+                            if USE_DIO:
+                                ability_clicks = [(648, 448), (1010, 563), (1099, 309)]
+                                for p in ability_clicks:
+                                    click(p[0], p[1], delay=0.2)
+                                    time.sleep(1.2)
+                            if MAX_UPG_AINZ_PLACEMENT:
+                                keyboard.press_and_release('z')
+                            if MONARCH_AINZ_PLACEMENT:
+                                directions('5')
+                                buy_monarch()
+                                quick_rts()
+                                time.sleep(1)
+                                click(pos[0], pos[1], delay=0.67) 
+                            time.sleep(1)
+                            print("Placed ainz's unit")
+                            click(607, 381, delay=0.2)
+                            
+                            # Ainz auto upgrade + monarch
+                            secure_select((ainz_pos[0]))
+                            time.sleep(0.5)
+                            keyboard.press_and_release('z')
                             time.sleep(0.5)
                             click(607, 381, delay=0.2)
-                        Ben_Upgraded = True
-                        # more gamble
-                        directions('3')
-                if not ainzplaced:
-                    if Unit_Placements_Left['Ainz'] == 0: # Ainz thingy
-                        ainzplaced = True
-                        quick_rts()
-                        time.sleep(1)
-                        ainz_pos = Unit_Positions['Ainz']
-                        pos = (876, 465)
-                        secure_select((ainz_pos[0]))
-                        time.sleep(0.5)
-                        if USE_WD:
-                            ainz_setup(unit="world des")
-                        elif USE_DIO:
-                            ainz_setup(unit="god")
-                        else:
-                            ainz_setup(unit=USE_AINZ_UNIT)
-                        click(pos[0], pos[1], delay=0.67) # Place world destroyer + auto upgrade
-                        time.sleep(0.5)
-                        while not pyautogui.pixel(607, 381) == (255,255,255):
-                            if g_toggle == False:
-                                break
-                            click(pos[0], pos[1], delay=0.67)
-                            time.sleep(0.5)
-                        time.sleep(1)
-                        if USE_DIO:
-                            ability_clicks = [(648, 448), (1010, 563), (1099, 309)]
-                            for p in ability_clicks:
-                                click(p[0], p[1], delay=0.2)
-                                time.sleep(1.2)
-                        if MAX_UPG_AINZ_PLACEMENT:
-                            keyboard.press_and_release('z')
-                        if MONARCH_AINZ_PLACEMENT:
                             directions('5')
                             buy_monarch()
                             quick_rts()
                             time.sleep(1)
-                            click(pos[0], pos[1], delay=0.67) 
-                        time.sleep(1)
-                        print("Placed ainz's unit")
-                        click(607, 381, delay=0.2)
-                        
-                        # Ainz auto upgrade + monarch
-                        secure_select((ainz_pos[0]))
-                        time.sleep(0.5)
-                        keyboard.press_and_release('z')
-                        time.sleep(0.5)
-                        click(607, 381, delay=0.2)
-                        directions('5')
-                        buy_monarch()
-                        quick_rts()
-                        time.sleep(1)
-                        click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
-                        time.sleep(1)
-                        # go gamble more son
-                        directions('3')
-                print("===============================")
-                is_done = True
-                for unit in Units_Placeable:
-                    if Unit_Placements_Left[unit] > 0:
-                        is_done = False
-                        print(f"{unit} has {Unit_Placements_Left[unit]} placements left.")
-                print("===============================")
-                if is_done:
-                    gamble_done = True
-                time.sleep(0.1)
-            print("Gambling done")
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            # Auto upgrade + Monarch everything else
-            
-            # set up buffer erza
-            
-            quick_rts()
-            time.sleep(1)
-    
-            # World destroyer
-            if USE_WD:
-                secure_select((876, 465))
-                time.sleep(1)
-                while True:
-                    if bt.does_exist("Winter\\StopWD.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
-                        print("Stop")
-                        break
-                    keyboard.press_and_release('t')
-                    time.sleep(0.5)
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-            elif USE_DIO:
-                secure_select((876, 465))
-                time.sleep(1)
-                while True:
-                    if bt.does_exist("Winter\\DIO_MOVE.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
-                        print("Stop")
-                        break
-                    keyboard.press_and_release('t')
-                    time.sleep(0.5)
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-            elif MAX_UPG_AINZ_PLACEMENT == False:
-                secure_select((876, 465))
-                time.sleep(1)
-                while True:
-                    if bt.does_exist("Winter\\YOUR_MOVE.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
-                        print("Stop")
-                        break
-                    keyboard.press_and_release('t')
-                    time.sleep(0.5)
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-            
-            # ice queen
-            for ice in Unit_Positions['Rukia']:
+                            click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
+                            time.sleep(1)
+                            # go gamble more son
+                            directions('3')
+                    print("===============================")
+                    is_done = True
+                    for unit in Units_Placeable:
+                        if Unit_Placements_Left[unit] > 0:
+                            is_done = False
+                            print(f"{unit} has {Unit_Placements_Left[unit]} placements left.")
+                    print("===============================")
+                    if is_done:
+                        gamble_done = True
+                    time.sleep(0.1)
+                print("Gambling done")
                 if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
                     break
-                secure_select((ice[0],ice[1]))
-                time.sleep(0.5)
-                set_boss()
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-                directions('5')
-                buy_monarch()
-                quick_rts()
-                time.sleep(0.5)
-                secure_select((ice[0],ice[1]))
-                time.sleep(0.5)
-                while True:
-                    if bt.does_exist("Winter\\StopUpgradeRukia.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
-                        print("Stop")
-                        break
-                    keyboard.press_and_release('t')
-                    time.sleep(0.5)
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
+                # Auto upgrade + Monarch everything else
                 
-            for gamer in Unit_Positions['Hero']:
-                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                    break
-                click(gamer[0],gamer[1],delay=0.2)
-                time.sleep(0.5)
-                keyboard.press_and_release('z')
-                set_boss()
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-                directions('5')
-                buy_monarch()
+                # set up buffer erza
+                
                 quick_rts()
-                time.sleep(0.5)
-                click(gamer[0],gamer[1],delay=0.2)
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            for kuzan in Unit_Positions['Kuzan']:
-                click(kuzan[0],kuzan[1],delay=0.2)
-                time.sleep(0.5)
-                keyboard.press_and_release('z')
-                set_boss()
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-                directions('5')
-                buy_monarch()
-                quick_rts()
-                time.sleep(0.5)
-                click(kuzan[0],kuzan[1],delay=0.2)
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                    break
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-            for esc in Unit_Positions['Escanor']:
-                click(esc[0],esc[1],delay=0.2)
-                time.sleep(0.5)
-                keyboard.press_and_release('z')
-                set_boss()
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-                directions('5')
-                buy_monarch()
-                quick_rts()
-                time.sleep(0.5)
-                click(esc[0],esc[1],delay=0.2)
-                time.sleep(0.5)
-                click(607, 381, delay=0.2)
-            
-            wave_150 = False
-            done_path = False   
-            while not wave_150:
-                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                    break
-                if avM.get_wave() == 149 and not done_path:       
-                    def spam_e():
-                        while not done_path:
-                            keyboard.press_and_release('e')
-                            time.sleep(0.2)
-                        print("Done buying lanes")
-                    quick_rts()
-                    #DIR_BUYRESTLANES
-                    keyboard.press('a')
-                    time.sleep(0.4)
-                    keyboard.release('a')
-                    keyboard.press_and_release('v')
+                time.sleep(1)
+        
+                # World destroyer
+                if USE_WD:
+                    secure_select((876, 465))
                     time.sleep(1)
-                    Thread(target=spam_e).start()
-                    keyboard.press('w')
-                    time.sleep(1.5)
-                    keyboard.release("w")
-                    time.sleep(1)
-                    keyboard.press('w')
+                    while True:
+                        if bt.does_exist("Winter\\StopWD.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
+                            print("Stop")
+                            break
+                        keyboard.press_and_release('t')
+                        time.sleep(0.5)
                     time.sleep(0.5)
-                    keyboard.release("w")
-                    keyboard.press('s')
-                    time.sleep(2.8)
-                    keyboard.release('s')
+                    click(607, 381, delay=0.2)
+                elif USE_DIO:
+                    secure_select((876, 465))
                     time.sleep(1)
-                    keyboard.press('s')
+                    while True:
+                        if bt.does_exist("Winter\\DIO_MOVE.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
+                            print("Stop")
+                            break
+                        keyboard.press_and_release('t')
+                        time.sleep(0.5)
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                elif MAX_UPG_AINZ_PLACEMENT == False:
+                    secure_select((876, 465))
                     time.sleep(1)
-                    keyboard.release('s')
-                    keyboard.press_and_release('v')
+                    while True:
+                        if bt.does_exist("Winter\\YOUR_MOVE.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
+                            print("Stop")
+                            break
+                        keyboard.press_and_release('t')
+                        time.sleep(0.5)
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                
+                # ice queen
+                for ice in Unit_Positions['Rukia']:
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    secure_select((ice[0],ice[1]))
+                    time.sleep(0.5)
+                    set_boss()
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                    directions('5')
+                    buy_monarch()
                     quick_rts()
+                    time.sleep(0.5)
+                    secure_select((ice[0],ice[1]))
+                    time.sleep(0.5)
+                    while True:
+                        if bt.does_exist("Winter\\StopUpgradeRukia.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
+                            print("Stop")
+                            break
+                        keyboard.press_and_release('t')
+                        time.sleep(0.5)
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                    
+                for gamer in Unit_Positions['Hero']:
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    click(gamer[0],gamer[1],delay=0.2)
+                    time.sleep(0.5)
+                    keyboard.press_and_release('z')
+                    set_boss()
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                    directions('5')
+                    buy_monarch()
+                    quick_rts()
+                    time.sleep(0.5)
+                    click(gamer[0],gamer[1],delay=0.2)
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                for kuzan in Unit_Positions['Kuzan']:
+                    click(kuzan[0],kuzan[1],delay=0.2)
+                    time.sleep(0.5)
+                    keyboard.press_and_release('z')
+                    set_boss()
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                    directions('5')
+                    buy_monarch()
+                    quick_rts()
+                    time.sleep(0.5)
+                    click(kuzan[0],kuzan[1],delay=0.2)
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                for esc in Unit_Positions['Escanor']:
+                    click(esc[0],esc[1],delay=0.2)
+                    time.sleep(0.5)
+                    keyboard.press_and_release('z')
+                    set_boss()
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                    directions('5')
+                    buy_monarch()
+                    quick_rts()
+                    time.sleep(0.5)
+                    click(esc[0],esc[1],delay=0.2)
+                    time.sleep(0.5)
+                    click(607, 381, delay=0.2)
+                
+                wave_150 = False
+                done_path = False   
+                while not wave_150:
+                    if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                        break
+                    if avM.get_wave() == 149 and not done_path:       
+                        def spam_e():
+                            while not done_path:
+                                keyboard.press_and_release('e')
+                                time.sleep(0.2)
+                            print("Done buying lanes")
+                        quick_rts()
+                        #DIR_BUYRESTLANES
+                        keyboard.press('a')
+                        time.sleep(0.4)
+                        keyboard.release('a')
+                        keyboard.press_and_release('v')
+                        time.sleep(1)
+                        Thread(target=spam_e).start()
+                        keyboard.press('w')
+                        time.sleep(1.5)
+                        keyboard.release("w")
+                        time.sleep(1)
+                        keyboard.press('w')
+                        time.sleep(0.5)
+                        keyboard.release("w")
+                        keyboard.press('s')
+                        time.sleep(2.8)
+                        keyboard.release('s')
+                        time.sleep(1)
+                        keyboard.press('s')
+                        time.sleep(1)
+                        keyboard.release('s')
+                        keyboard.press_and_release('v')
+                        quick_rts()
+                        time.sleep(2)
+                        done_path = True
+
+                        # Buy all other lanes
+                        pass
+                    if avM.get_wave()==150:
+                        wave_150 = True
+                    else:
+                        if avM.get_wave()%2==0:
+                            repair_barricades()
+                            quick_rts()
                     time.sleep(2)
-                    done_path = True
+                if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+                    on_failure()
+                    break
+                num_runs+=1
+                print(f"Run over, runs: {num_runs}")
+                try:
+                        victory = wt.screen_shot_memory()
+                        runtime = f"{datetime.now()-start_of_run}"
+                    
+                        g = Thread(target=webhook.send_webhook,
+                            kwargs={
 
-                    # Buy all other lanes
-                    pass
-                if avM.get_wave()==150:
-                    wave_150 = True
-                else:
-                    if avM.get_wave()%2==0:
-                        repair_barricades()
-                        quick_rts()
-                time.sleep(2)
-            if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
-                on_failure()
-                break
-            num_runs+=1
-            print(f"Run over, runs: {num_runs}")
-            try:
-                    victory = wt.screen_shot_memory()
-                    runtime = f"{datetime.now()-start_of_run}"
-                
-                    g = Thread(target=webhook.send_webhook,
-                        kwargs={
-
-                                "run_time": f"{str(runtime).split('.')[0]}",
-                                "num_runs": num_runs,
-                                "task_name": "Winter Event",
-                                "img": victory,
-                            },
-                        )            
-                    g.start()
-            except Exception as e:
-                print(f" error {e}")
-                
-                
-            ainz_pos = Unit_Positions['Ainz']
-            click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
-            time.sleep(0.5)
-            keyboard.press_and_release('x')
-            time.sleep(0.5)
-            keyboard.press_and_release('f')
-            time.sleep(1)
-            sell_kaguya()
-            keyboard.press_and_release('f')
-            
-            match_restarted = False
-            while not match_restarted:
-                avM.restart_match() 
+                                    "run_time": f"{str(runtime).split('.')[0]}",
+                                    "num_runs": num_runs,
+                                    "task_name": "Winter Event",
+                                    "img": victory,
+                                },
+                            )            
+                        g.start()
+                except Exception as e:
+                    print(f" error {e}")
+                    
+                    
+                ainz_pos = Unit_Positions['Ainz']
+                click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
                 time.sleep(0.5)
-                if avM.get_wave() == 0:
-                    match_restarted = True
+                keyboard.press_and_release('x')
+                time.sleep(0.5)
+                keyboard.press_and_release('f')
                 time.sleep(1)
-
+                sell_kaguya()
+                keyboard.press_and_release('f')
+                
+                match_restarted = False
+                while not match_restarted:
+                    avM.restart_match() 
+                    time.sleep(0.5)
+                    if avM.get_wave() == 0:
+                        match_restarted = True
+                    time.sleep(1)
+        time.sleep(1)
 main()
