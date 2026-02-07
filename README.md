@@ -11,27 +11,19 @@ For the rest of the files download from:
 https://mega.nz/file/C8p1nSpL#c_jFD9UViHjo4eYiVqW8Ep3nUB5L-e7x-f_rWsivvFA
 
 # Recent updates
-Added CTM flags.  
-For `directions('1')` and `directions('2')`, you can add:
 
+###Fixed stop/start key not stopping
+
+###Full numbis support + auto start
 ```python
-CTM = True
+AUTO_START = True # if true upon failure it will auto restart, this also starts the macro when you launch the script
+USE_NIMBUS = True # Use the nimbus cloud instead of newsman (more consistent + better)
 ```
 
-to use the click‑to‑move version (good for low‑end / laggy machines).
-
-Added support so you can use whatever unit you want from Caloric Stone.
+###Added loop-wide lost detection
+Restarts program upon lost + resets the mount too.
 
 ```python
-USE_WD = True          # use World Destroyer
-USE_DIO = False        # built‑in DIO thing instead
-USE_AINZ_UNIT = ""     # name of the unit
-
-MONARCH_AINZ_PLACEMENT = False   # gets monarch for the unit you place with caloric stone
-MAX_UPG_AINZ_PLACEMENT = False   # if True: presses Z for auto-upgrade
-                                 # if False: upgrades until it finds a certain move (requires your own picture)
-
-AINZ_PLACEMENT_MOVE_PNG = "Winter\\YOUR_MOVE.png"  
-# name the screenshot YOUR_MOVE; it will upgrade the unit until it finds that image
+detect_loss() # detects + restarts 
+reset_mount() # resets the mount state to unmounted
 ```
-
