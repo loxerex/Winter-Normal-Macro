@@ -1,41 +1,90 @@
+A cleaned, structured version of your README that keeps your tone but makes everything clearer, organized, and easier for users to follow:
 
 ---
 
 # Winter-Normal-Macro
-An anime vanguards macro for the winter normal LTM mode
+An Anime Vanguards macro for the **Winter Normal** LTM mode.
 
-# What is this?
-This just contains updated versions of the winter event python files so I can release more QOL or updates easier (make sure to also add the new pictures from resources).  
-For the rest of the files download from:  
-REMOVE THE print(restart_match()) IN AV METHODS (IN THE TOOLS FOLDER)
+---
+
+## Overview
+This folder contains **updated Python files** for the Winter event so new QoL changes and fixes can be released quickly.  
+Make sure you also copy the **new images** from the `resources` folder.
+
+For the rest of the required files, download the base package here:  
 https://mega.nz/file/CphzFRiR#s5_-7hDLLsRpXCn5DjvZ6p9ZT-V0tVR8_sHXh21uiZM
-MAKE SURE TO REPLACE THE OLD FILES IN THAT MEGA FILES WITH THE NEW ONES!!
 
-# Common fixes
-When downloading from mega data corruption can happen which can screw up the python executable or the tesseract. You can either try redownloading / unzipping again OR https://github.com/tesseract-ocr/tesseract/releases/tag/5.5.0 use the teseract installer to install tesseract (clear the folder first) with a clean version in the folder. You can also add the path to the tesseract (to the directory not the exe) in your PATH (enviromental variable).
-For python, you can do a clean install of version 3.13.11 on your device and install these packages: https://pastebin.com/mS2xFd3m
+After downloading, **replace the old files** in that package with the updated ones from this repo.
 
-# Recent updates
-Added alot more failure detection to reset if it fails. Added CTM flags.  Roblox click to move (built in pathing, good for low-end devices / high ping users)
-For `directions('1')` and `directions('2')`, you can add:
+**Important:**  
+Inside the `Tools` folder, open `avMethods.py` and **remove**:
 
 ```python
-directions('1', CTM = True) # or directions('1', 'rabbit', CTM = True) etc
+print(restart_match())
 ```
 
-to use the click‑to‑move version (good for low‑end / laggy machines).
+---
 
-Added support so you can use whatever unit you want from Caloric Stone.
+## Common Fixes
+Mega downloads can occasionally corrupt files, which breaks either **Python** or **Tesseract**.
+
+### Tesseract issues
+If Tesseract stops working or the macro can’t detect text:
+
+- Re‑download the files and unzip again, **or**
+- Install a clean version of Tesseract from:  
+  https://github.com/tesseract-ocr/tesseract/releases/tag/5.5.0  
+- Clear the old Tesseract folder before installing
+- Optionally add the **Tesseract directory** (not the exe) to your system PATH
+
+### Python issues
+If Python fails to run or packages are missing:
+
+- Install a clean Python **3.13.11**
+- Install the required packages listed here:  
+  https://pastebin.com/mS2xFd3m
+
+---
+
+## Recent Updates
+### Better failure detection
+More checks were added to automatically reset the macro if something goes wrong.
+Will add inactivity timer in the future
+
+### Click‑to‑Move (CTM) support
+For direction 1 and 2
+Roblox’s built‑in pathing is now supported.  
+Useful for **low‑end devices**, **lag**, or **high ping**.
+
+Use CTM like this:
 
 ```python
-USE_WD = True          # use World Destroyer
-USE_DIO = False        # built‑in DIO thing instead
-USE_AINZ_UNIT = ""     # name of the unit
-
-MONARCH_AINZ_PLACEMENT = False   # gets monarch for the unit you place with caloric stone
-MAX_UPG_AINZ_PLACEMENT = False   # if True: presses Z for auto-upgrade
-                                 # if False: upgrades until it finds a certain move (requires your own picture)
-
-AINZ_PLACEMENT_MOVE_PNG = "Winter\\YOUR_MOVE.png"  
-# name the screenshot YOUR_MOVE; it will upgrade the unit until it finds that image
+directions('1', CTM=True)
+# or
+directions('1', 'rabbit', CTM=True)
 ```
+
+### Caloric Stone unit selection
+You can now choose **any unit** to place with Caloric Stone.
+
+```python
+USE_WD = True          # Use World Destroyer
+USE_DIO = False        # Use built‑in DIO logic instead
+USE_AINZ_UNIT = ""     # Name of the unit to place
+```
+
+### Monarch + Auto‑Upgrade logic
+```python
+MONARCH_AINZ_PLACEMENT = False   # Gets monarch for the unit placed with Caloric Stone
+MAX_UPG_AINZ_PLACEMENT = False   # True = spam Z for auto-upgrade
+                                 # False = upgrade until a specific move is detected
+```
+
+### Custom move detection
+```python
+AINZ_PLACEMENT_MOVE_PNG = "Winter\\YOUR_MOVE.png"
+# Take a screenshot of the move, name it YOUR_MOVE.png,
+# and the macro will upgrade until it finds that image.
+```
+
+---
