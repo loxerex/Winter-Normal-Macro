@@ -425,14 +425,14 @@ def place_unit(unit: str, pos : tuple[int,int], close: bool | None=None, region:
     if region is None:
         while not bt.does_exist(f"Winter\\{unit}_hb.png", confidence=0.8, grayscale=False):
             if time_out_2 <= 0:
-                return None
+                break
             time_out_2-=1
             time.sleep(0.3)
         bt.click_image(f'Winter\\{unit}_hb.png', confidence=0.8,grayscale=False,offset=(0,0))
     else:
         while not bt.does_exist(f"Winter\\{unit}_hb.png", confidence=0.8, grayscale=False,region=region):
             if time_out_2 <= 0:
-                return None
+                break
             time_out_2-=1
             time.sleep(0.3)
         bt.click_image(f'Winter\\{unit}_hb.png', confidence=0.8,grayscale=False,offset=(0,0),region=region)
@@ -1203,5 +1203,6 @@ for z in range(3):
 if avM.get_wave() == 1:
     avM.restart_match()
 main()
+
 
 
