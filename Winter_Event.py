@@ -1047,7 +1047,7 @@ def main():
                     if avM.get_wave()==150:
                         wave_150 = True
                     else:
-                        if avM.get_wave()%2==0:
+                        if avM.get_wave()%2==0 or avM.get_wave() == 139:
                             repair_barricades()
                             quick_rts()
                     time.sleep(2)
@@ -1093,5 +1093,6 @@ def main():
                     time.sleep(1)
         time.sleep(1)
 main()
+
 
 
