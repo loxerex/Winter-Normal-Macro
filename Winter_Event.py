@@ -593,7 +593,7 @@ def sell_kaguya(): # Sells kaguya (cant reset while domain is active)
 def detect_loss():
     print("Starting loss detection")
     while True:
-        if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+        if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=25):
             print("found loss")
             try:
                 args = list(sys.argv)
@@ -1161,30 +1161,9 @@ def main():
                 time.sleep(1)
 
 
-def reset_mount():
-    detected = False
-    while not detected:
-        time.sleep(2.5)
-        found_mount = True
-        t = 15
-        keyboard.press_and_release('v')
-        while not bt.does_exist("Winter\\ResetMount.png",confidence=0.7,grayscale=True,region=(512, 689, 975, 763)):
-            print(t)
-            t-=1
-            time.sleep(0.2)
-            if t<0:
-                print("timeout no detected")
-                found_mount = False
-                break
-        if found_mount:
-            print("Reset mount")
-            detected = True
-            time.sleep(2.5)
-            keyboard.press_and_release('v')
     
-if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=8):
+if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=25):
     on_failure()
-    reset_mount()
 Thread(target=detect_loss).start()
 if AUTO_START:
     if not "--stopped" in sys.argv:
@@ -1197,6 +1176,7 @@ for z in range(3):
 if avM.get_wave() >= 1:
     avM.restart_match()
 main()
+
 
 
 
