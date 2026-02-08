@@ -16,9 +16,7 @@ print(reset_match())
 ```
 # Recent updates
 
-### Fixed stop/start key not stopping
-### Added loop-wide lost detection
-### Removed reset_mount() was useless
+### Fixed retry not detecting if monarch was on screen
 ### Fixed retry breaking for some people, get new image [here](https://github.com/loxerex/Winter-Normal-Macro/blob/main/Resources/Winter/DetectLoss.png)
 ### Full numbis support + auto start
 ```python
