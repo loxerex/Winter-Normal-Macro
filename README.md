@@ -4,9 +4,10 @@
 
 # Winter-Normal-Macro
 An anime vanguards macro for the winter normal LTM mode
+- Help guide: https://docs.google.com/document/d/1tDzx0MOSXvXefACTolxSwQxJZxrjvEqqECa1C2PsEs0/edit?tab=t.0
 
 # What is this?
-This just contains updated versions of the winter event.  
+This just contains updated versions of the winter_event.py and the images.  
 For the rest of the files download from:  
 - https://mega.nz/file/CphzFRiR#s5_-7hDLLsRpXCn5DjvZ6p9ZT-V0tVR8_sHXh21uiZM
 ### MAKE SURE TO REMOVE THIS IN Tools\avMethods.py
