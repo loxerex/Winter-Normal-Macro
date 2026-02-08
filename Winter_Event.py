@@ -635,6 +635,7 @@ def main():
             print("Starting new match")
             wait_start()
             quick_rts()
+            time.sleep(2)
             # Set up first 2 rabbits
             directions('1', 'rabbit')
             keyboard.press_and_release('e')
@@ -1181,6 +1182,7 @@ for z in range(3):
 if avM.get_wave() >= 1:
     avM.restart_match()
 main()
+
 
 
 
