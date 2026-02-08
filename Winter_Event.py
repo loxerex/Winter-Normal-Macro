@@ -15,6 +15,7 @@ import ctypes
 
 # Variables
 STOP_START_HOTKEY = 'l'
+REPLAY_BUTTON_POS = (771,703) # where the replay button is, change if needed
 AUTO_START = True # if true upon failure it will auto restart, this also starts the macro when you launch the script
 USE_NIMBUS = True # Use the nimbus cloud instead of newsman (more consistent + better)
 USE_WD = True # use world destroyer
@@ -564,13 +565,14 @@ def set_boss(): # Sets unit priority to boss
     
 def on_failure():
     print("ran")
-    click(771,703,delay=0.2)
+    global REPLAY_BUTTON_POS
+    click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
     time.sleep(1)
     while bt.does_exist("Winter\\DetectLoss.png",confidence=0.9,grayscale=False,region=(311, 295, 825, 428)):
-        click(771,703,delay=0.2)
+        click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
         print("Retrying...")
         time.sleep(0.4)
-    click(771,703,delay=0.2)
+    click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
     
 
 def sell_kaguya(): # Sells kaguya (cant reset while domain is active)
@@ -1179,6 +1181,7 @@ for z in range(3):
 if avM.get_wave() >= 1:
     avM.restart_match()
 main()
+
 
 
 
