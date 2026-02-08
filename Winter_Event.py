@@ -45,7 +45,7 @@ Unit_Positions = {
         'Escanor':[(587, 519)],
         'Hero': [(916, 501),(927, 528),(916, 554)],
         'Kuzan':[(938, 477), (951, 570), (657, 521), (654, 559)],
-        'Kag':[(643, 490)] 
+        'Kag':[(746, 329)]
         
 }
 Units_Placeable = ['Ainz','Beni','Rukia','Mage','Escanor','Hero','Kuzan','Kag']
@@ -1197,6 +1197,7 @@ for z in range(3):
 if avM.get_wave() >= 1:
     avM.restart_match()
 main()
+
 
 
 
