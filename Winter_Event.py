@@ -563,10 +563,12 @@ def set_boss(): # Sets unit priority to boss
     keyboard.press_and_release('r')
     
 def on_failure():
+    print("ran")
     click(771,703,delay=0.2)
-    while pyautogui.pixelMatchesColor(771,703,expectedRGBColor=(198,158,0),tolerance=8):
+    time.sleep(1)
+    while bt.does_exist("Winter\\DetectLoss.png",confidence=0.9,grayscale=False,region=(311, 295, 825, 428)):
         click(771,703,delay=0.2)
-        print(pyautogui.pixel(771,703))
+        print("Retrying...")
         time.sleep(0.4)
     click(771,703,delay=0.2)
     
@@ -1176,6 +1178,7 @@ for z in range(3):
 if avM.get_wave() >= 1:
     avM.restart_match()
 main()
+
 
 
 
