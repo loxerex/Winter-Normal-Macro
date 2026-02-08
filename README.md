@@ -14,17 +14,18 @@ For the rest of the files download from:
 ```
 print(reset_match())
 ```
-# Recent updates
+# Recent Updates
 
-### Fixed retry not detecting if monarch was on screen
-### Fixed retry breaking for some people, get new image [here](https://github.com/loxerex/Winter-Normal-Macro/blob/main/Resources/Winter/DetectLoss.png)
-### Full numbis support + auto start
+### Added Wave 140 reset toggle
+### Added auto redo path if fail
+### Added UI Navigation mode (if the upgrader doesnt work for you turn on)
+### Added start button id mode (does image detection instead of pixel)
+
 ```python
-AUTO_START = True # if true upon failure it will auto restart, this also starts the macro when you launch the script
-USE_NIMBUS = True # Use the nimbus cloud instead of newsman (more consistent + better)
-detect_loss() # detects + restarts 
+START_BUTTON_ID = True # If true it uses image detection to search for start button
+USE_UI_NAV = True # uses ui navigation for buying upgrades
+WAVE_RESTART_150 = False # if false restarts on 140
 ```
-
 ---
 
 ## Common Fixes
