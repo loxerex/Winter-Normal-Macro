@@ -14,6 +14,8 @@ For the rest of the files download from:
 ```
 print(reset_match())
 ```
+# Update Guide
+https://youtu.be/E6ZZEhlJBC0
 # Recent Updates
 
 ### Added Wave 140 reset toggle
