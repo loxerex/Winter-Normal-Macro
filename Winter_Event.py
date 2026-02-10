@@ -14,24 +14,33 @@ import pydirectinput
 import ctypes
 
 
-VERSION_N = '1.2'
+VERSION_N = '1.21'
 
-# Variables
+# Keybinds
 STOP_START_HOTKEY = 'l'
+
+# Match Settings
 START_BUTTON_ID = True # If true it uses image detection to search for start button
 USE_UI_NAV = False # uses ui navigation for buying upgrades
 WAVE_RESTART_150 = False # if false restarts on 140
-REPLAY_BUTTON_POS = (771,703) # where the replay button is, change if needed
-AUTO_START = True # if true upon failure it will auto restart, this also starts the macro when you launch the script
 USE_NIMBUS = True # Use the nimbus cloud instead of newsman (more consistent + better)
+AUTO_START = True # if true upon failure it will auto restart, this also starts the macro when you launch the script
+
+# Path Settings
+CTM_P1_P2 = False # Instead of using keys, it will click to move for area 1 and 2. (mirko and speed wagon area)
+# Positions
+REPLAY_BUTTON_POS = (771,703) # where the replay button is, change if needed
+
+# Ainz
 USE_WD = True # use world destroyer
 USE_DIO = False # built in dio thing instead
 USE_AINZ_UNIT = "" # name of the unit
 MONARCH_AINZ_PLACEMENT = False # Gets monarch for the unit you place with caloric sone
 MAX_UPG_AINZ_PLACEMENT = False # Will just press z for auto upgrade if true, else it goes untill it finds a certain move (you need your own picture of it)
 AINZ_PLACEMENT_MOVE_PNG = "Winter\\YOUR_MOVE.png" # name the screenshot YOUR_MOVE, it will upgrade the unit untill it finds that image
-
 AINZ_SPELLS = False # After the first run it wont waste time selecting spells again
+
+
 
 Unit_Placements_Left = {
     "Ainz": 1,
@@ -114,7 +123,7 @@ def quick_rts(): # Returns to spawn
         click(loc[0], loc[1], delay=0.1)
         time.sleep(0.2)
         
-def directions(area: str, unit: str | None=None, CTM: bool | None = None): # This is for all the pathing
+def directions(area: str, unit: str | None=None): # This is for all the pathing
     '''
     This is the pathing for all the areas: 1 [rabbit, nami, hero (trash gamer)], 2 [speed, tak], 3: Mystery box, 4: Upgrader, 5: Monarch upgrader
     '''
@@ -125,12 +134,13 @@ def directions(area: str, unit: str | None=None, CTM: bool | None = None): # Thi
         if area == '1':  
             #DIR_PATHING
             # Pathing
-            if not CTM:
+            if not CTM_P1_P2:
                 keyboard.press('a')
                 time.sleep(0.4)
                 keyboard.release('a')
-                keyboard.press_and_release('v')
                 time.sleep(1)
+                keyboard.press_and_release('v')
+                time.sleep(1.5)
                 keyboard.press('w')
                 time.sleep(1.5)
                 keyboard.release('w')
@@ -138,15 +148,16 @@ def directions(area: str, unit: str | None=None, CTM: bool | None = None): # Thi
                 time.sleep(1.1)
                 keyboard.release('a')
             else:
-                pos =  [(669, 287), (738, 188), (230, 312)]
+                pos =  [(681, 309), (748, 159), (273, 460)] # click to move clicks
                 keyboard.press_and_release('v')
                 time.sleep(1)
                 for p in pos:
                     click(p[0],p[1],delay=0.2,right_click=True)
-                    time.sleep(1.5)
+                    time.sleep(1.9)
                 time.sleep(1.5)
             if unit == 'rabbit':
-                click(596, 310, delay=0.2,right_click=True) # Click to move
+                #[(558, 334)
+                click(577, 361, delay=0.2,right_click=True) # Click to move
                 time.sleep(1)
             if unit == "nami":
                 click(742, 219, delay=0.2,right_click=True)
@@ -158,19 +169,20 @@ def directions(area: str, unit: str | None=None, CTM: bool | None = None): # Thi
             time.sleep(2)
         # Speed wagon + Tak
         if area == '2':
-            if not CTM:
+            if not CTM_P1_P2:
                 keyboard.press('a')
                 time.sleep(0.4)
                 keyboard.release('a')
-                keyboard.press_and_release('v')
                 time.sleep(1)
+                keyboard.press_and_release('v')
+                time.sleep(1.5)
                 keyboard.press('w')
                 time.sleep(1.5)
                 keyboard.release('w')
             else:
-                pos =  [(668, 292), (752, 182), (752, 348)]
+                pos = [(676, 313), (759, 195), (734, 404)]
                 keyboard.press_and_release('v')
-                time.sleep(1)
+                time.sleep(1.3)
                 for p in pos:
                     click(p[0],p[1],delay=0.2,right_click=True)
                     time.sleep(1.5)
@@ -273,7 +285,7 @@ def directions(area: str, unit: str | None=None, CTM: bool | None = None): # Thi
         if area == '1':  
             #DIR_PATHING
             # Pathing
-            if not CTM:
+            if not CTM_P1_P2:
                 keyboard.press('a')
                 time.sleep(0.4)
                 keyboard.release('a')
@@ -306,7 +318,7 @@ def directions(area: str, unit: str | None=None, CTM: bool | None = None): # Thi
             time.sleep(2)
         # Speed wagon + Tak
         if area == '2':
-            if not CTM:
+            if not CTM_P1_P2:
                 keyboard.press('a')
                 time.sleep(0.4)
                 keyboard.release('a')
@@ -731,13 +743,13 @@ def set_boss(): # Sets unit priority to boss
 def on_failure():
     print("ran")
     global REPLAY_BUTTON_POS
-    click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
+    #click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
     time.sleep(1)
-    while bt.does_exist("Winter\\DetectLoss.png",confidence=0.9,grayscale=False,region=(311, 295, 825, 428)):
-        click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
+    while bt.does_exist("Winter\\DetectLoss.png",confidence=0.7,grayscale=True,region=(311, 295, 825, 428)):
+        #click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
         print("Retrying...")
         time.sleep(0.4)
-    click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
+    #click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
     
 
 def sell_kaguya(): # Sells kaguya (cant reset while domain is active)
@@ -1440,12 +1452,6 @@ def on_disconnect():
         if pyautogui.pixelMatchesColor(884,266,(170,232,235),tolerance=8):
             open_menu = True
         if not open_menu:
-            click(849,596,delay=0.1)
-            time.sleep(2)
-            click(752, 548,delay=0.2)
-            time.sleep(2)
-            click(1083,321,delay=0.1)
-            time.sleep(2)
             bt.click_image("Winter\\AreaIcon.png",confidence=0.8,grayscale=False,offset=(0,0))
         time.sleep(3)
     # [(454, 703), (659, 509), (301, 676)]
@@ -1504,5 +1510,3 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
-
-
