@@ -12,62 +12,49 @@ from datetime import datetime
 from threading import Thread
 import pydirectinput
 import ctypes
+import subprocess
+import json
+
+VERSION_N = '1.3'
+
+class Cur_Settings: pass
+
+global Settings
+Settings = Cur_Settings()
 
 
-VERSION_N = '1.21'
+Settings_Path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"Settings")
+WE_Json = os.path.join(Settings_Path,"Winter_Event.json")
 
-# Keybinds
-STOP_START_HOTKEY = 'l'
+AINZ_SPELLS = False
 
-# Match Settings
-START_BUTTON_ID = True # If true it uses image detection to search for start button
-USE_UI_NAV = False # uses ui navigation for buying upgrades
-WAVE_RESTART_150 = False # if false restarts on 140
-USE_NIMBUS = True # Use the nimbus cloud instead of newsman (more consistent + better)
-AUTO_START = True # if true upon failure it will auto restart, this also starts the macro when you launch the script
-
-# Path Settings
-CTM_P1_P2 = False # Instead of using keys, it will click to move for area 1 and 2. (mirko and speed wagon area)
-# Positions
-REPLAY_BUTTON_POS = (771,703) # where the replay button is, change if needed
-
-# Ainz
-USE_WD = True # use world destroyer
-USE_DIO = False # built in dio thing instead
-USE_AINZ_UNIT = "" # name of the unit
-MONARCH_AINZ_PLACEMENT = False # Gets monarch for the unit you place with caloric sone
-MAX_UPG_AINZ_PLACEMENT = False # Will just press z for auto upgrade if true, else it goes untill it finds a certain move (you need your own picture of it)
-AINZ_PLACEMENT_MOVE_PNG = "Winter\\YOUR_MOVE.png" # name the screenshot YOUR_MOVE, it will upgrade the unit untill it finds that image
-AINZ_SPELLS = False # After the first run it wont waste time selecting spells again
-
-
-
-Unit_Placements_Left = {
-    "Ainz": 1,
-    'Beni': 3,
-    'Rukia': 3,
-    'Mage': 3,
-    'Escanor': 1,
-    'Hero': 3,
-    'Kuzan':4,
-    'Kag':1
-}   
-
-Unit_Positions = {
-        "Ainz": [(745, 470)],
-        'Beni': [(873, 522),(843, 523), (807, 522)],
-        'Rukia': [(784, 557),(827, 556),(867, 556)],
-        'Mage': [(740, 557), (679, 583), (681, 498)],
-        'Escanor':[(587, 519)],
-        'Hero': [(916, 501),(927, 528),(916, 554)],
-        'Kuzan':[(938, 477), (951, 570), (657, 521), (654, 559)],
-        'Kag':[(746, 329)]
-        
-}
-Units_Placeable = ['Ainz','Beni','Rukia','Mage','Escanor','Hero','Kuzan','Kag']
-# Mage = erza, Hero = trash gamer
-
+def load_json_data():
+    JSON_DATA = None
+    if os.path.isfile(WE_Json):
+        with open(WE_Json, 'r') as f:
+            JSON_DATA = json.load(f)
+    return JSON_DATA
+if os.path.exists(Settings_Path):
+    if os.path.exists(WE_Json):
+        data = load_json_data()
+        for variable in data:
+            value = data.get(variable)
+            #print(f"{variable} = {value}")
+            try:
+                if variable == "Unit_Positions" or variable == "Unit_Placements_Left":
+                    if type(value[0]) == dict:
+                        setattr(Settings, variable, value[0])
+                else:
+                    print(variable)
+                    setattr(Settings, variable, value)
+            except Exception as e:
+                print(e)
+else:
+    print("Failed to find settings file. Closing in 10 seconds")
+    time.sleep(10)
+    sys.exit()
 # Failsafe key
+global g_toggle
 g_toggle = False
 def toggle():
     global g_toggle
@@ -75,9 +62,9 @@ def toggle():
     if g_toggle == False:
         
         sys.stdout.flush()
-        os.execl(sys.executable, sys.executable, *sys.argv + ["--stopped"])
-
-keyboard.add_hotkey(STOP_START_HOTKEY, toggle) 
+        subprocess.Popen([sys.executable, *sys.argv, "--stopped"])
+        sys.exit(0)
+keyboard.add_hotkey(Settings.STOP_START_HOTKEY, toggle) 
 
 # Actions
 def click(x,y, delay: int | None=None, right_click: bool | None = None) -> None:
@@ -106,7 +93,7 @@ def wait_start(delay: int | None = None):
     while found == False and i<90: # 1 and a half minute
         try: 
             i+=1
-            if START_BUTTON_ID:
+            if Settings.START_BUTTON_ID:
                 if bt.does_exist("Winter\\VoteStartButton.png",confidence=0.8,grayscale=True):
                     found = True
             else:
@@ -130,11 +117,11 @@ def directions(area: str, unit: str | None=None): # This is for all the pathing
     # All this does is set up camera whenever it's the first time running, disable if needed
         
     #Contains rabbit, nami, and hero
-    if USE_NIMBUS:
+    if Settings.USE_NIMBUS:
         if area == '1':  
             #DIR_PATHING
             # Pathing
-            if not CTM_P1_P2:
+            if not Settings.CTM_P1_P2:
                 keyboard.press('a')
                 time.sleep(0.4)
                 keyboard.release('a')
@@ -148,28 +135,27 @@ def directions(area: str, unit: str | None=None): # This is for all the pathing
                 time.sleep(1.1)
                 keyboard.release('a')
             else:
-                pos =  [(681, 309), (748, 159), (273, 460)] # click to move clicks
                 keyboard.press_and_release('v')
                 time.sleep(1)
-                for p in pos:
+                for p in Settings.CTM_AREA_1:
                     click(p[0],p[1],delay=0.2,right_click=True)
                     time.sleep(1.9)
                 time.sleep(1.5)
             if unit == 'rabbit':
                 #[(558, 334)
-                click(577, 361, delay=0.2,right_click=True) # Click to move
+                click(Settings.CTM_AREA_1_UNITS[0][0], Settings.CTM_AREA_1_UNITS[0][1], delay=0.2,right_click=True) # Click to move
                 time.sleep(1)
             if unit == "nami":
-                click(742, 219, delay=0.2,right_click=True)
+                click(Settings.CTM_AREA_1_UNITS[1][0], Settings.CTM_AREA_1_UNITS[1][1], delay=0.2,right_click=True)
                 time.sleep(1)
             if unit == "hero":
-                click(887, 305, delay=0.2,right_click=True)
+                click(Settings.CTM_AREA_1_UNITS[2][0], Settings.CTM_AREA_1_UNITS[2][1], delay=0.2,right_click=True)
                 time.sleep(1)
             keyboard.press_and_release('v') 
             time.sleep(2)
         # Speed wagon + Tak
         if area == '2':
-            if not CTM_P1_P2:
+            if not Settings.CTM_P1_P2:
                 keyboard.press('a')
                 time.sleep(0.4)
                 keyboard.release('a')
@@ -180,41 +166,39 @@ def directions(area: str, unit: str | None=None): # This is for all the pathing
                 time.sleep(1.5)
                 keyboard.release('w')
             else:
-                pos = [(676, 313), (759, 195), (734, 404)]
                 keyboard.press_and_release('v')
                 time.sleep(1.3)
-                for p in pos:
+                for p in Settings.CTM_AREA_2:
                     click(p[0],p[1],delay=0.2,right_click=True)
                     time.sleep(1.5)
                 time.sleep(1.5)
             #(534, 706), (535, 546)
             if unit == 'speed':
-                click(534, 706, delay=0.2,right_click=True)
+                click(Settings.CTM_AREA_2_UNITS[0][0], Settings.CTM_AREA_2_UNITS[0][1], delay=0.2,right_click=True)
                 time.sleep(1)
             if unit == 'tak':
-                click(535, 546, delay=0.2,right_click=True)
+                click(Settings.CTM_AREA_2_UNITS[1][0], Settings.CTM_AREA_2_UNITS[1][1], delay=0.2,right_click=True)
                 time.sleep(1)
             keyboard.press_and_release('v')
             time.sleep(2)
         # Gambling time
         if area == '3': 
-            
             keyboard.press_and_release('v')
             time.sleep(1)
             keyboard.press('a')
-            time.sleep(3)
+            time.sleep(Settings.AREA_3_DELAYS[0])
             keyboard.release('a')
 
             keyboard.press('s')
-            time.sleep(1.65)
+            time.sleep(Settings.AREA_3_DELAYS[1])
             keyboard.release('s')
 
             keyboard.press('d')
-            time.sleep(1.6)
+            time.sleep(Settings.AREA_3_DELAYS[2])
             keyboard.release('d')
 
             keyboard.press('s')
-            time.sleep(0.5)
+            time.sleep(Settings.AREA_3_DELAYS[3])
             keyboard.release('s')
             keyboard.press_and_release('v')
             time.sleep(2)
@@ -235,19 +219,19 @@ def directions(area: str, unit: str | None=None): # This is for all the pathing
                     keyboard.press_and_release('v')
                     time.sleep(1)
                     keyboard.press('a')
-                    time.sleep(3)
+                    time.sleep(Settings.AREA_3_DELAYS[0])
                     keyboard.release('a')
 
                     keyboard.press('s')
-                    time.sleep(1.65)
+                    time.sleep(Settings.AREA_3_DELAYS[1])
                     keyboard.release('s')
 
                     keyboard.press('d')
-                    time.sleep(1.6)
+                    time.sleep(Settings.AREA_3_DELAYS[2])
                     keyboard.release('d')
 
                     keyboard.press('s')
-                    time.sleep(0.5)
+                    time.sleep(Settings.AREA_3_DELAYS[3])
                     keyboard.release('s')
                     keyboard.press_and_release('v')
                     time.sleep(2)
@@ -259,11 +243,11 @@ def directions(area: str, unit: str | None=None): # This is for all the pathing
             keyboard.press_and_release('v')
             time.sleep(1)
             keyboard.press('a')
-            time.sleep(3)
+            time.sleep(Settings.AREA_4_DELAYS[0])
             keyboard.release('a')
 
             keyboard.press('s')
-            time.sleep(1.7)
+            time.sleep(Settings.AREA_4_DELAYS[1])
             keyboard.release('s')
             keyboard.press_and_release('v')
             time.sleep(2)
@@ -272,127 +256,14 @@ def directions(area: str, unit: str | None=None): # This is for all the pathing
             keyboard.press_and_release('v')
             time.sleep(1)
             keyboard.press('a')
-            time.sleep(3)
+            time.sleep(Settings.AREA_5_DELAYS[0])
             keyboard.release('a')
 
             keyboard.press('w')
-            time.sleep(1.85)
+            time.sleep(Settings.AREA_5_DELAYS[1])
             keyboard.release('w')
             keyboard.press_and_release('v')
             time.sleep(2)
-    else:
-        #Contains rabbit, nami, and hero
-        if area == '1':  
-            #DIR_PATHING
-            # Pathing
-            if not CTM_P1_P2:
-                keyboard.press('a')
-                time.sleep(0.4)
-                keyboard.release('a')
-                keyboard.press_and_release('v')
-                time.sleep(1)
-                keyboard.press('w')
-                time.sleep(1.5)
-                keyboard.release('w')
-                keyboard.press('a')
-                time.sleep(1.1)
-                keyboard.release('a')
-            else:
-                pos =  [(669, 287), (738, 188), (230, 312)]
-                keyboard.press_and_release('v')
-                time.sleep(1)
-                for p in pos:
-                    click(p[0],p[1],delay=0.2,right_click=True)
-                    time.sleep(1.5)
-                time.sleep(1.5)
-            if unit == 'rabbit':
-                click(596, 310, delay=0.2,right_click=True) # Click to move
-                time.sleep(1)
-            if unit == "nami":
-                click(742, 219, delay=0.2,right_click=True)
-                time.sleep(1)
-            if unit == "hero":
-                click(887, 305, delay=0.2,right_click=True)
-                time.sleep(1)
-            keyboard.press_and_release('v') 
-            time.sleep(2)
-        # Speed wagon + Tak
-        if area == '2':
-            if not CTM_P1_P2:
-                keyboard.press('a')
-                time.sleep(0.4)
-                keyboard.release('a')
-                keyboard.press_and_release('v')
-                time.sleep(1)
-                keyboard.press('w')
-                time.sleep(1.5)
-                keyboard.release('w')
-            else:
-                pos =  [(668, 292), (752, 182), (752, 348)]
-                keyboard.press_and_release('v')
-                time.sleep(1)
-                for p in pos:
-                    click(p[0],p[1],delay=0.2,right_click=True)
-                    time.sleep(1.5)
-                time.sleep(1.5)
-            #(534, 706), (535, 546)
-            if unit == 'speed':
-                click(534, 706, delay=0.2,right_click=True)
-                time.sleep(1)
-            if unit == 'tak':
-                click(535, 546, delay=0.2,right_click=True)
-                time.sleep(1)
-            keyboard.press_and_release('v')
-            time.sleep(2)
-        # Gambling time
-        if area == '3': 
-            
-            keyboard.press_and_release('v')
-            time.sleep(1)
-            keyboard.press('a')
-            time.sleep(2.8)
-            keyboard.release('a')
-
-            keyboard.press('s')
-            time.sleep(1.65)
-            keyboard.release('s')
-
-            keyboard.press('d')
-            time.sleep(1.6)
-            keyboard.release('d')
-
-            keyboard.press('s')
-            time.sleep(0.4)
-            keyboard.release('s')
-            keyboard.press_and_release('v')
-            time.sleep(2)
-
-        if area == '4': #  Upgrader location
-            keyboard.press_and_release('v')
-            time.sleep(1)
-            keyboard.press('a')
-            time.sleep(3)
-            keyboard.release('a')
-
-            keyboard.press('s')
-            time.sleep(1.65)
-            keyboard.release('s')
-            keyboard.press_and_release('v')
-            time.sleep(2)
-            
-        if area == '5': # This is where it buys monarch
-            keyboard.press_and_release('v')
-            time.sleep(1)
-            keyboard.press('a')
-            time.sleep(3)
-            keyboard.release('a')
-
-            keyboard.press('w')
-            time.sleep(1.65)
-            keyboard.release('w')
-            keyboard.press_and_release('v')
-            time.sleep(2)
-        
         
 def upgrader(upgrade: str):
     '''
@@ -411,7 +282,7 @@ def upgrader(upgrade: str):
         time.sleep(e_delay)
     click(607, 381, delay=0.2)
     time.sleep(0.5)
-    if not USE_UI_NAV:
+    if not Settings.USE_UI_NAV:
         if upgrade == 'fortune':
             click(966, 471, delay=0.2)
             time.sleep(0.5)
@@ -660,16 +531,15 @@ def buy_monarch(): # this just presses e untill it buys monarch, use after direc
     print("got monarch")
 
 def place_hotbar_units():
-    global Unit_Placements_Left
     # Scans and places all units in your hotbar, tracking them too
     placing = True
     while placing:
         is_unit = False
-        for unit in Units_Placeable:
+        for unit in Settings.Units_Placeable:
             if bt.does_exist(f"Winter\\{unit}_hb.png", confidence=0.8, grayscale=False):
                 is_unit = True
-                unit_pos = Unit_Positions.get(unit)
-                index = Unit_Placements_Left.get(unit)-1
+                unit_pos = Settings.Unit_Positions.get(unit)
+                index = Settings.Unit_Placements_Left.get(unit)-1
                 if index <0:
                     is_unit = False
                 print(f"Placing unit {unit} {index+1} at {unit_pos}")
@@ -682,8 +552,8 @@ def place_hotbar_units():
                         else:
                             click(cl[0],cl[1],delay=0.2)
                             time.sleep(1)
-                Unit_Placements_Left[unit]-=1
-                print(f"Placed {unit} | {unit} has {Unit_Placements_Left.get(unit)} placements left.")
+                Settings.Unit_Placements_Left[unit]-=1
+                print(f"Placed {unit} | {unit} has {Settings.Unit_Placements_Left.get(unit)} placements left.")
         if is_unit == False:
             placing = False
             
@@ -697,7 +567,7 @@ def ainz_setup(unit:str):
             continue
         if v == 12: # the click to open world items
             print("Selected Spells")
-            click(Unit_Positions['Ainz'][0][0], Unit_Positions['Ainz'][0][1], delay=0.2)
+            click(Settings.Unit_Positions['Ainz'][0][0], Settings.Unit_Positions['Ainz'][0][1], delay=0.2)
             print("Waiting for world item logo")
             while not bt.does_exist("Winter\\CaloricThing.png",confidence=0.8,grayscale=False):
                 time.sleep(0.5)
@@ -742,14 +612,13 @@ def set_boss(): # Sets unit priority to boss
     
 def on_failure():
     print("ran")
-    global REPLAY_BUTTON_POS
-    click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
+    click(Settings.REPLAY_BUTTON_POS[0],Settings.REPLAY_BUTTON_POS[1],delay=0.2)
     time.sleep(1)
     while bt.does_exist("Winter\\DetectLoss.png",confidence=0.7,grayscale=True,region=(311, 295, 825, 428)):
-        click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
+        click(Settings.REPLAY_BUTTON_POS[0],Settings.REPLAY_BUTTON_POS[1],delay=0.2)
         print("Retrying...")
         time.sleep(0.4)
-    click(REPLAY_BUTTON_POS[0],REPLAY_BUTTON_POS[1],delay=0.2)
+    click(Settings.REPLAY_BUTTON_POS[0],Settings.REPLAY_BUTTON_POS[1],delay=0.2)
     
 
 def sell_kaguya(): # Sells kaguya (cant reset while domain is active)
@@ -781,19 +650,19 @@ def detect_loss():
                 if "--stopped" in args:
                     args.remove("--stopped")
                 sys.stdout.flush()
-                os.execl(sys.executable, sys.executable, *args)
+                subprocess.Popen([sys.executable, *sys.argv])
+                sys.exit(0)
             except Exception as e:
                 print("Error")
         time.sleep(1)
 def main():
     print("Starting Winter Event Macro")
-    rabbit_pos = [(956, 543), (692, 524), (953, 512)]
-    speed_pos =  [(851, 531), (892, 534), (932, 536)]
+    rabbit_pos = Settings.Unit_Positions.get("mirko")
+    speed_pos =  Settings.Unit_Positions.get("speedwagon")
     start_of_run = datetime.now()
     num_runs = 0  
     while True:
         global g_toggle
-        global Unit_Placements_Left
         if g_toggle:
             # Reset all placement counts:
             Reset_Placements = {
@@ -806,8 +675,7 @@ def main():
                 'Kuzan':4,
                 'Kag':1
             }   
-            global Unit_Placements_Left
-            Unit_Placements_Left = Reset_Placements.copy()
+            Settings.Unit_Placements_Left = Reset_Placements.copy()
             
             print("Starting new match")
             wait_start()
@@ -839,7 +707,6 @@ def main():
             place_unit('Speed', speed_pos[1], close=True)
             place_unit('Speed', speed_pos[2], close=True)
             for pos in speed_pos:
-                 
                 click(pos[0], pos[1], delay=0.2)
                 keyboard.press_and_release('z')
                 time.sleep(0.5)
@@ -859,18 +726,20 @@ def main():
                         click(607, 381, delay=0.2)
                 time.sleep(1)
             # Tak's placement + max
+        
             keyboard.press('w')
-            time.sleep(0.8)
+            time.sleep(Settings.TAK_W_DELAY)
             keyboard.release('w')
             # Press e untill tak is bought
             while not bt.does_exist('Winter\\Tak_hb.png', confidence=0.7, grayscale=False):
                 keyboard.press_and_release('e')
                 time.sleep(0.2)
-            place_unit("Tak", (853, 604))
+            
+            place_unit("Tak", Settings.Unit_Positions.get("tak"))
             keyboard.press_and_release('z')
             time.sleep(0.5)
             #DIR_NAMICARD
-            click(382, 268, delay=0.2, right_click=True) # Goes to nami's card
+            click(Settings.CTM_NAMI_CARD[0], Settings.CTM_NAMI_CARD[1], delay=0.2, right_click=True) # Goes to nami's card
             while not bt.does_exist('Unit_Maxed.png',confidence=0.8,grayscale=True): # Wait till tak is max
                 time.sleep(0.5)
             click(607, 381, delay=0.2)
@@ -924,12 +793,12 @@ def main():
                 if avM.get_wave()>=19:
                     #DIR_BUYMAINLANES
                     keyboard.press('d')
-                    time.sleep(1)
+                    time.sleep(Settings.BUY_MAIN_LANE_DELAYS[0])
                     keyboard.release('d')
                     keyboard.press_and_release('e')
                     keyboard.press_and_release('e')
                     keyboard.press('w')
-                    time.sleep(0.6)
+                    time.sleep(Settings.BUY_MAIN_LANE_DELAYS[1])
                     keyboard.release('w')
                     keyboard.press_and_release('e')
                     keyboard.press_and_release('e')
@@ -977,8 +846,8 @@ def main():
                     place_hotbar_units()
                     directions('3')
                 if not Erza_Upgraded:
-                    erza_buffer = Unit_Positions['Mage']
-                    if Unit_Placements_Left['Mage'] == 0:
+                    erza_buffer = Settings.Unit_Positions['Mage']
+                    if Settings.Unit_Placements_Left['Mage'] == 0:
                         quick_rts()
                         time.sleep(1)
                         # BUffer
@@ -1040,10 +909,10 @@ def main():
                         # more gamble
                         directions('3')
                 if not Ben_Upgraded:
-                    if Unit_Placements_Left['Beni'] == 0:
+                    if Settings.Unit_Placements_Left['Beni'] == 0:
                         quick_rts()
                         time.sleep(1)
-                        for ben in Unit_Positions['Beni']:
+                        for ben in Settings.Unit_Positions['Beni']:
                             click(ben[0],ben[1],delay=0.2)
                             secure_select((ben[0],ben[1]))
                             time.sleep(0.5)
@@ -1062,20 +931,20 @@ def main():
                         # more gamble
                         directions('3')
                 if not ainzplaced:
-                    if Unit_Placements_Left['Ainz'] == 0: # Ainz thingy
+                    if Settings.Unit_Placements_Left['Ainz'] == 0: # Ainz thingy
                         ainzplaced = True
                         quick_rts()
                         time.sleep(1)
-                        ainz_pos = Unit_Positions['Ainz']
-                        pos = (876, 465)
+                        ainz_pos = Settings.Unit_Positions['Ainz']
+                        pos = Settings.Unit_Positions.get("Caloric_Unit")
                         secure_select((ainz_pos[0]))
                         time.sleep(0.5)
-                        if USE_WD:
+                        if Settings.USE_WD:
                             ainz_setup(unit="world des")
-                        elif USE_DIO:
+                        elif Settings.USE_DIO:
                             ainz_setup(unit="god")
                         else:
-                            ainz_setup(unit=USE_AINZ_UNIT)
+                            ainz_setup(unit=Settings.USE_AINZ_UNIT)
                         global AINZ_SPELLS
                         if not AINZ_SPELLS:
                             AINZ_SPELLS = True
@@ -1087,14 +956,14 @@ def main():
                             click(pos[0], pos[1], delay=0.67)
                             time.sleep(0.5)
                         time.sleep(1)
-                        if USE_DIO:
+                        if Settings.USE_DIO:
                             ability_clicks = [(648, 448), (1010, 563), (1099, 309)]
                             for p in ability_clicks:
                                 click(p[0], p[1], delay=0.2)
                                 time.sleep(1.2)
-                        if MAX_UPG_AINZ_PLACEMENT:
+                        if Settings.MAX_UPG_AINZ_PLACEMENT:
                             keyboard.press_and_release('z')
-                        if MONARCH_AINZ_PLACEMENT:
+                        if Settings.MONARCH_AINZ_PLACEMENT:
                             directions('5')
                             buy_monarch()
                             quick_rts()
@@ -1120,10 +989,10 @@ def main():
                         directions('3')
                 print("===============================")
                 is_done = True
-                for unit in Units_Placeable:
-                    if Unit_Placements_Left[unit] > 0:
+                for unit in Settings.Units_Placeable:
+                    if Settings.Unit_Placements_Left[unit] > 0:
                         is_done = False
-                        print(f"{unit} has {Unit_Placements_Left[unit]} placements left.")
+                        print(f"{unit} has {Settings.Unit_Placements_Left[unit]} placements left.")
                 print("===============================")
                 if is_done:
                     gamble_done = True
@@ -1140,8 +1009,8 @@ def main():
             time.sleep(1)
     
             # World destroyer
-            if USE_WD:
-                secure_select((876, 465))
+            if Settings.USE_WD:
+                secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
                 time.sleep(1)
                 while True:
                     if bt.does_exist("Winter\\StopWD.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
@@ -1154,8 +1023,8 @@ def main():
                     time.sleep(0.5)
                 time.sleep(0.5)
                 click(607, 381, delay=0.2)
-            elif USE_DIO:
-                secure_select((876, 465))
+            elif Settings.USE_DIO:
+                secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
                 time.sleep(1)
                 while True:
                     if bt.does_exist("Winter\\DIO_MOVE.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
@@ -1168,8 +1037,8 @@ def main():
                     time.sleep(0.5)
                 time.sleep(0.5)
                 click(607, 381, delay=0.2)
-            elif MAX_UPG_AINZ_PLACEMENT == False:
-                secure_select((876, 465))
+            elif Settings.MAX_UPG_AINZ_PLACEMENT == False:
+                secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
                 time.sleep(1)
                 while True:
                     if bt.does_exist("Winter\\YOUR_MOVE.png",confidence=0.8,grayscale=False,region=(433, 477, 603, 555)):
@@ -1184,7 +1053,7 @@ def main():
                 click(607, 381, delay=0.2)
             
             # ice queen
-            for ice in Unit_Positions['Rukia']:
+            for ice in Settings.Unit_Positions['Rukia']:
                  
                 secure_select((ice[0],ice[1]))
                 time.sleep(0.5)
@@ -1212,7 +1081,7 @@ def main():
                
 
                 
-            for gamer in Unit_Positions['Hero']:
+            for gamer in Settings.Unit_Positions['Hero']:
                  
 
                 click(gamer[0],gamer[1],delay=0.2)
@@ -1230,7 +1099,7 @@ def main():
                 click(607, 381, delay=0.2)
              
             
-            for kuzan in Unit_Positions['Kuzan']:
+            for kuzan in Settings.Unit_Positions['Kuzan']:
                 click(kuzan[0],kuzan[1],delay=0.2)
                 time.sleep(0.5)
                 keyboard.press_and_release('z')
@@ -1247,7 +1116,7 @@ def main():
 
              
                
-            for esc in Unit_Positions['Escanor']:
+            for esc in Settings.Unit_Positions['Escanor']:
                 click(esc[0],esc[1],delay=0.2)
                 time.sleep(0.5)
                 keyboard.press_and_release('z')
@@ -1261,8 +1130,7 @@ def main():
                 click(esc[0],esc[1],delay=0.2)
                 time.sleep(0.5)
                 click(607, 381, delay=0.2)
-            
-            if WAVE_RESTART_150:
+            if Settings.WAVE_RESTART_150:
                 wave_150 = False
                 done_path = False   
                 while not wave_150:
@@ -1289,20 +1157,16 @@ def main():
                         time.sleep(1)
                         keyboard.release('o')
                         keyboard.press('s')
-                        time.sleep(0.45)
+                        time.sleep(Settings.BUY_FINAL_LANE_DELAYS[0])
                         keyboard.release('s')
                         keyboard.press_and_release('v')
                         time.sleep(1)
                         Thread(target=spam_e).start()
                         keyboard.press('a')
-                        time.sleep(1.5)
-                        time.sleep(1)
-                        time.sleep(0.5)
+                        time.sleep(Settings.BUY_FINAL_LANE_DELAYS[1])
                         keyboard.release("a")
                         keyboard.press('d')
-                        time.sleep(2.8)
-                        time.sleep(1)
-                        time.sleep(1)
+                        time.sleep(Settings.BUY_FINAL_LANE_DELAYS[2])
                         keyboard.release('d')
                         keyboard.press_and_release('v')
                         quick_rts()
@@ -1342,20 +1206,16 @@ def main():
                         time.sleep(1)
                         keyboard.release('o')
                         keyboard.press('s')
-                        time.sleep(0.45)
+                        time.sleep(Settings.BUY_FINAL_LANE_DELAYS[0])
                         keyboard.release('s')
                         keyboard.press_and_release('v')
                         time.sleep(1)
                         Thread(target=spam_e).start()
                         keyboard.press('a')
-                        time.sleep(1.5)
-                        time.sleep(1)
-                        time.sleep(0.5)
+                        time.sleep(Settings.BUY_FINAL_LANE_DELAYS[1])
                         keyboard.release("a")
                         keyboard.press('d')
-                        time.sleep(2.8)
-                        time.sleep(1)
-                        time.sleep(1)
+                        time.sleep(Settings.BUY_FINAL_LANE_DELAYS[2])
                         keyboard.release('d')
                         keyboard.press_and_release('v')
                         quick_rts()
@@ -1388,7 +1248,7 @@ def main():
                 print(f" error {e}")
                 
                 
-            ainz_pos = Unit_Positions['Ainz']
+            ainz_pos = Settings.Unit_Positions['Ainz']
             click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
             time.sleep(0.5)
             keyboard.press_and_release('x')
@@ -1415,7 +1275,8 @@ def disconnect_checker():
             if "--stopped" in args:
                 args.remove("--stopped")
             sys.stdout.flush()
-            os.execl(sys.executable, sys.executable, *args)
+            subprocess.Popen([sys.executable, *sys.argv])
+            sys.exit(0)
         except Exception as e:
             print("Error")
         time.sleep(6)
@@ -1488,7 +1349,7 @@ if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=10) or pyautogui.pi
     time.sleep(6)
 Thread(target=detect_loss).start()
 Thread(target=disconnect_checker).start()
-if AUTO_START:
+if Settings.AUTO_START:
     if not "--stopped" in sys.argv:
         g_toggle = True
     else:
@@ -1516,5 +1377,4 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
-
 
