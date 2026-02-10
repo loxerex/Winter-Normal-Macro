@@ -12,7 +12,7 @@ An anime vanguards macro for the winter normal LTM mode
 # What is this?
 This contains updated versions of `winter_event.py` and the images.  
 For the rest of the files download from:  
-- https://u.pcloud.link/publink/show?code=XZpt0l5ZkLubXliXPp0FbVB2nK7l4JbJzTRk
+- https://u.pcloud.link/publink/show?code=XZunpl5ZrG0vX3NNTsfCwzmkzPR81F9eAJIy
 
 # Update Guide
 https://youtu.be/E6ZZEhlJBC0
