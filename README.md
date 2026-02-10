@@ -1,6 +1,5 @@
 ---
-
-## Recent Update — 1.3
+## Recent Update 1.3
 - Check discord for changelog
 https://discord.gg/rbWmQdKZka
 ---
