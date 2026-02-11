@@ -23,6 +23,8 @@ class Cur_Settings: pass
 global Settings
 Settings = Cur_Settings()
 
+USE_KAGUYA = False
+
 PRIVATE_SERVER_CODE = "" # Not in settings so u dont accidently share ur ps lol
 
 TAK_FINDER = True # turn off if it runs into a wall while trying to find tak
@@ -62,6 +64,9 @@ else:
     
 print("Loaded settings")
 Settings.Units_Placeable.append("Doom")
+
+if not USE_KAGUYA:
+    Settings.Units_Placeable.remove("Kag")
 # Failsafe key
 global g_toggle
 g_toggle = False
@@ -570,13 +575,14 @@ def place_hotbar_units():
                     print(f"Placing unit {unit} {index+1} at {unit_pos}")
                     place_unit(unit, unit_pos[index])
                     if unit == 'Kag':
-                        kag_ability = [(645, 444), (743, 817), (1091, 244)]
-                        for cl in kag_ability:
-                            if cl == (743, 817):
-                                bt.click_image("Winter\\Kaguya_Auto.png", confidence=0.8, grayscale=False, offset=[0,0]) 
-                            else:
-                                click(cl[0],cl[1],delay=0.2)
-                                time.sleep(1)
+                        if USE_KAGUYA:
+                            kag_ability = [(645, 444), (743, 817), (1091, 244)]
+                            for cl in kag_ability:
+                                if cl == (743, 817):
+                                    bt.click_image("Winter\\Kaguya_Auto.png", confidence=0.8, grayscale=False, offset=[0,0]) 
+                                else:
+                                    click(cl[0],cl[1],delay=0.2)
+                                    time.sleep(1)
                 else:
                     doom = (572, 560)
                     place_unit(unit,doom)
@@ -734,6 +740,9 @@ def main():
                 'Kuzan':4,
                 'Kag':1
             }   
+            if not USE_KAGUYA:
+                Reset_Placements['Kag'] = 0
+                
             Settings.Unit_Placements_Left = Reset_Placements.copy()
             
             print("Starting new match")
@@ -1328,17 +1337,17 @@ def main():
             except Exception as e:
                 print(f" error {e}")
                 
+            if USE_KAGUYA:    
+                ainz_pos = Settings.Unit_Positions['Ainz']
+                click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
+                time.sleep(0.5)
+                keyboard.press_and_release('x')
+                time.sleep(0.5)
+                keyboard.press_and_release('f')
+                time.sleep(1)
+                sell_kaguya()
+                keyboard.press_and_release('f')
                 
-            ainz_pos = Settings.Unit_Positions['Ainz']
-            click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
-            time.sleep(0.5)
-            keyboard.press_and_release('x')
-            time.sleep(0.5)
-            keyboard.press_and_release('f')
-            time.sleep(1)
-            sell_kaguya()
-            keyboard.press_and_release('f')
-            
             match_restarted = False
             while not match_restarted:
                 avM.restart_match() 
