@@ -790,8 +790,8 @@ def main():
                 click(50,50,delay=0.1,right_click=True,dont_move=True)
             else:
                 keyboard.press('w')
-            time.sleep(Settings.TAK_W_DELAY)
-            keyboard.release('w')
+                time.sleep(Settings.TAK_W_DELAY)
+                keyboard.release('w')
             path_tak = False
             while not path_tak:
                 keyboard.press('w')
@@ -1521,3 +1521,5 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
+
+
