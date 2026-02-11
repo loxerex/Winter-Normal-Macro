@@ -16,7 +16,7 @@ import subprocess
 import json
 import pygetwindow as gw
 
-VERSION_N = '1.45'
+VERSION_N = '1.49'
 
 class Cur_Settings: pass
 
@@ -84,13 +84,15 @@ def kill():
     
 keyboard.add_hotkey(Settings.STOP_START_HOTKEY, toggle) 
 keyboard.add_hotkey("k",kill)
+
 # Actions
-def click(x,y, delay: int | None=None, right_click: bool | None = None) -> None:
+def click(x,y, delay: int | None=None, right_click: bool | None = None, dont_move: bool | None = None) -> None:
     if delay is not None:
         delay=delay
     else:
         delay = 0.65
-    pyautogui.moveTo(x,y)
+    if dont_move is None:
+        pyautogui.moveTo(x,y)
     ctypes.windll.user32.mouse_event(0x0001, 0, 1, 0, 0)
     time.sleep(delay)
     ctypes.windll.user32.mouse_event(0x0001, 0, -1, 0, 0)
@@ -506,7 +508,7 @@ def place_unit(unit: str, pos : tuple[int,int], close: bool | None=None, region:
         keyboard.press_and_release('q')
         time.sleep(0.5)
         click(pos[0], pos[1], delay=0.1)
-        time.sleep(0.6)
+        time.sleep(1)
         if pyautogui.pixel(607, 381) == (255,255,255):
             break
         if True: # if u want it to re-click
@@ -735,10 +737,18 @@ def main():
             quick_rts()
             time.sleep(2)
             # Set up first 2 rabbits
-            directions('1', 'rabbit')
-            keyboard.press_and_release('e')
-            keyboard.press_and_release('e')
-            quick_rts()
+            got_mirko = False
+            while not got_mirko:
+                directions('1', 'rabbit')
+                keyboard.press_and_release('e')
+                keyboard.press_and_release('e')
+                quick_rts()
+                time.sleep(1.5)
+                if bt.does_exist("Winter\\Bunny_hb.png",confidence=0.7,grayscale=False, region=(517, 761, 671, 885)):
+                    print("Got mirko")
+                    got_mirko = True
+                else:
+                    print("Didnt detect mirko, retrying purchase")
             click(835, 226, delay=0.2) # Start Match
             
              
@@ -746,9 +756,17 @@ def main():
             place_unit('Bunny', rabbit_pos[1], close=True)
             
             # get third
-            directions('1', 'rabbit')
-            keyboard.press_and_release('e')
-            quick_rts()
+            got_mirko_two = False
+            while not got_mirko_two:
+                directions('1', 'rabbit')
+                keyboard.press_and_release('e')
+                quick_rts()
+                time.sleep(1.5)
+                if bt.does_exist("Winter\\Bunny_hb.png",confidence=0.7,grayscale=False, region=(517, 761, 671, 885)):
+                    print("Got mirko")
+                    got_mirko_two = True
+                else:
+                    print("Didnt detect mirko, retrying purchase")
             place_unit('Bunny', rabbit_pos[2], close=True)
             
             #Start farms - speedwagon
@@ -766,10 +784,24 @@ def main():
             click(607, 381, delay=0.2)
              
             # Tak's placement + max
-        
-            keyboard.press('w')
+            
+            if bt.does_exist("Winter\\Tak_Detect.png",confidence=0.8,grayscale=True):
+                bt.click_image("Winter\\Tak_Detect.png",confidence=0.8,grayscale=True,offset=(0,-20))   
+                click(50,50,delay=0.1,right_click=True,dont_move=True)
+            else:
+                keyboard.press('w')
             time.sleep(Settings.TAK_W_DELAY)
             keyboard.release('w')
+            path_tak = False
+            while not path_tak:
+                keyboard.press('w')
+                time.sleep(0.1)
+                keyboard.release('w')
+                keyboard.press_and_release('e')
+                time.sleep(0.4)
+                if bt.does_exist('Winter\\TakDetect.png', confidence=0.7, grayscale=True,region=(581, 676, 958, 752)) or  bt.does_exist('Winter\\Tak_hb.png', confidence=0.7, grayscale=False):
+                    path_tak = True
+                time.sleep(0.5)
             # Press e untill tak is bought
             while not bt.does_exist('Winter\\Tak_hb.png', confidence=0.7, grayscale=False):
                 keyboard.press_and_release('e')
@@ -778,13 +810,15 @@ def main():
             place_unit("Tak", Settings.Unit_Positions.get("tak"))
             keyboard.press_and_release('z')
             time.sleep(0.5)
-            #DIR_NAMICARD
-            click(Settings.CTM_NAMI_CARD[0], Settings.CTM_NAMI_CARD[1], delay=0.2, right_click=True) # Goes to nami's card
-            while not bt.does_exist('Unit_Maxed.png',confidence=0.8,grayscale=True): # Wait till tak is max
-                time.sleep(0.5)
             click(607, 381, delay=0.2)
-             
-               
+            
+            #DIR_NAMICARD
+            if bt.does_exist("Winter\\Nami_detect.png",confidence=0.8,grayscale=True):
+                bt.click_image("Winter\\Nami_detect.png",confidence=0.8,grayscale=True,offset=(0,0))   
+                click(50,50,delay=0.1,right_click=True,dont_move=True)
+            else:
+                click(Settings.CTM_NAMI_CARD[0], Settings.CTM_NAMI_CARD[1], delay=0.2, right_click=True) # Goes to nami's card
+            time.sleep(2)
             #Nami
             while not bt.does_exist('Winter\\Nami_hb.png', confidence=0.7, grayscale=False, region=(528, 788, 749, 860)): # Buys nami's card
                 keyboard.press_and_release('e')
@@ -1434,6 +1468,7 @@ def on_disconnect():
 if "--restart" in sys.argv:
     on_disconnect()
     
+
 Thread(target=disconnect_checker).start()
 print(f"Launched with args {sys.argv}")
 print(f"Running loxer's winter macro v{VERSION_N}")
@@ -1486,7 +1521,3 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
-
-
-
-
