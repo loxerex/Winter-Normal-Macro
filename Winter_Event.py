@@ -16,7 +16,7 @@ import subprocess
 import json
 import pygetwindow as gw
 
-VERSION_N = '1.4'
+VERSION_N = '1.41'
 
 class Cur_Settings: pass
 
@@ -1256,7 +1256,7 @@ def main():
                     if avM.get_wave()==140:
                         wave_140 = True
                     else:
-                        if avM.get_wave()%2==0:
+                        if avM.get_wave()%2==0 or avM.get_wave() == 139 and done_path:
                             repair_barricades()
                             quick_rts()
                     time.sleep(2)
@@ -1477,4 +1477,5 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
+
 
