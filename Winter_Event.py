@@ -14,14 +14,18 @@ import pydirectinput
 import ctypes
 import subprocess
 import json
+import pygetwindow as gw
 
-VERSION_N = '1.3'
+VERSION_N = '1.4'
 
 class Cur_Settings: pass
 
 global Settings
 Settings = Cur_Settings()
 
+PRIVATE_SERVER_CODE = "" # Not in settings so u dont accidently share ur ps lol
+
+ROUND_RESTART = 0 # 0 will make it so this doesnt happen, change it to what round u want it to restart
 
 Settings_Path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"Settings")
 WE_Json = os.path.join(Settings_Path,"Winter_Event.json")
@@ -39,13 +43,11 @@ if os.path.exists(Settings_Path):
         data = load_json_data()
         for variable in data:
             value = data.get(variable)
-            #print(f"{variable} = {value}")
             try:
                 if variable == "Unit_Positions" or variable == "Unit_Placements_Left":
                     if type(value[0]) == dict:
                         setattr(Settings, variable, value[0])
                 else:
-                    print(variable)
                     setattr(Settings, variable, value)
             except Exception as e:
                 print(e)
@@ -53,6 +55,11 @@ else:
     print("Failed to find settings file. Closing in 10 seconds")
     time.sleep(10)
     sys.exit()
+    
+    
+    
+print("Loaded settings")
+Settings.Units_Placeable.append("Doom")
 # Failsafe key
 global g_toggle
 g_toggle = False
@@ -60,10 +67,17 @@ def toggle():
     global g_toggle
     g_toggle = not g_toggle
     if g_toggle == False:
-        
+        args = list(sys.argv)
+        try:
+            if "--restart" in args:
+                args.remove("--restart")
+            if "--stopped" in args:
+                args.remove("--stopped")
+        except Exception as e:
+            print(e)
         sys.stdout.flush()
-        subprocess.Popen([sys.executable, *sys.argv, "--stopped"])
-        sys.exit(0)
+        subprocess.Popen([sys.executable, *args, "--stopped"])
+        os._exit(0)
 keyboard.add_hotkey(Settings.STOP_START_HOTKEY, toggle) 
 
 # Actions
@@ -537,23 +551,37 @@ def place_hotbar_units():
         is_unit = False
         for unit in Settings.Units_Placeable:
             if bt.does_exist(f"Winter\\{unit}_hb.png", confidence=0.8, grayscale=False):
-                is_unit = True
-                unit_pos = Settings.Unit_Positions.get(unit)
-                index = Settings.Unit_Placements_Left.get(unit)-1
-                if index <0:
-                    is_unit = False
-                print(f"Placing unit {unit} {index+1} at {unit_pos}")
-                place_unit(unit, unit_pos[index])
-                if unit == 'Kag':
-                    kag_ability = [(645, 444), (743, 817), (1091, 244)]
-                    for cl in kag_ability:
-                        if cl == (743, 817):
-                            bt.click_image("Winter\\Kaguya_Auto.png", confidence=0.8, grayscale=False, offset=[0,0]) 
-                        else:
-                            click(cl[0],cl[1],delay=0.2)
-                            time.sleep(1)
-                Settings.Unit_Placements_Left[unit]-=1
-                print(f"Placed {unit} | {unit} has {Settings.Unit_Placements_Left.get(unit)} placements left.")
+                if unit != "Doom":
+                    is_unit = True
+                    unit_pos = Settings.Unit_Positions.get(unit)
+                    index = Settings.Unit_Placements_Left.get(unit)-1
+                    if index <0:
+                        is_unit = False
+                    print(f"Placing unit {unit} {index+1} at {unit_pos}")
+                    place_unit(unit, unit_pos[index])
+                    if unit == 'Kag':
+                        kag_ability = [(645, 444), (743, 817), (1091, 244)]
+                        for cl in kag_ability:
+                            if cl == (743, 817):
+                                bt.click_image("Winter\\Kaguya_Auto.png", confidence=0.8, grayscale=False, offset=[0,0]) 
+                            else:
+                                click(cl[0],cl[1],delay=0.2)
+                                time.sleep(1)
+                else:
+                    doom = (572, 560)
+                    place_unit(unit,doom)
+                    time.sleep(2)
+                    set_boss()
+                    keyboard.press_and_release('z')
+                    directions('5')
+                    buy_monarch()
+                    quick_rts()
+                    click(doom[0],doom[1],delay=0.2)
+                if unit != "Doom":
+                    Settings.Unit_Placements_Left[unit]-=1
+                    print(f"Placed {unit} | {unit} has {Settings.Unit_Placements_Left.get(unit)} placements left.")
+                else:
+                    print("Placed doom slayer.")
         if is_unit == False:
             placing = False
             
@@ -639,8 +667,9 @@ def sell_kaguya(): # Sells kaguya (cant reset while domain is active)
         if tick>=40:
             sold = True
         time.sleep(0.4)
-        
+
 def detect_loss():
+    time.sleep(10)
     print("Starting loss detection")
     while True:
         if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=10) or pyautogui.pixelMatchesColor(690,270,(199, 45, 40),tolerance=5):
@@ -649,9 +678,11 @@ def detect_loss():
                 args = list(sys.argv)
                 if "--stopped" in args:
                     args.remove("--stopped")
+                if "--restart" in args:
+                    args.remove("--restart")    
                 sys.stdout.flush()
-                subprocess.Popen([sys.executable, *sys.argv])
-                sys.exit(0)
+                subprocess.Popen([sys.executable, *args])
+                os._exit(0)
             except Exception as e:
                 print("Error")
         time.sleep(1)
@@ -662,6 +693,19 @@ def main():
     start_of_run = datetime.now()
     num_runs = 0  
     while True:
+        if ROUND_RESTART > 0:
+            print("restart")
+            if num_runs >= ROUND_RESTART:
+                try:
+                    print("recconect")
+                    args = list(sys.argv)
+                    if "--stopped" in args:
+                        args.remove("--stopped")
+                    sys.stdout.flush()
+                    subprocess.Popen([sys.executable, *args, "--restart"])
+                    os._exit(0)
+                except Exception as e:
+                    print(e)
         global g_toggle
         if g_toggle:
             # Reset all placement counts:
@@ -712,19 +756,6 @@ def main():
                 time.sleep(0.5)
             click(607, 381, delay=0.2)
              
-            # Wait till max money on all speedwagon
-            speed_max = [False, False, False]
-            while not all(speed_max):
-                if not g_toggle:
-                    break
-                for i, pos in enumerate(speed_pos):
-                    if speed_max[i] != True:
-                        click(pos[0],pos[1],delay=0.2)
-                        time.sleep(0.6)
-                        if bt.does_exist('Unit_Maxed.png',confidence=0.8,grayscale=True):
-                            speed_max[i] = True
-                        click(607, 381, delay=0.2)
-                time.sleep(1)
             # Tak's placement + max
         
             keyboard.press('w')
@@ -939,9 +970,9 @@ def main():
                         pos = Settings.Unit_Positions.get("Caloric_Unit")
                         secure_select((ainz_pos[0]))
                         time.sleep(0.5)
-                        if Settings.USE_WD:
+                        if Settings.USE_WD == True:
                             ainz_setup(unit="world des")
-                        elif Settings.USE_DIO:
+                        elif Settings.USE_DIO == True:
                             ainz_setup(unit="god")
                         else:
                             ainz_setup(unit=Settings.USE_AINZ_UNIT)
@@ -990,9 +1021,10 @@ def main():
                 print("===============================")
                 is_done = True
                 for unit in Settings.Units_Placeable:
-                    if Settings.Unit_Placements_Left[unit] > 0:
-                        is_done = False
-                        print(f"{unit} has {Settings.Unit_Placements_Left[unit]} placements left.")
+                    if unit != "Doom":
+                        if Settings.Unit_Placements_Left[unit] > 0:
+                            is_done = False
+                            print(f"{unit} has {Settings.Unit_Placements_Left[unit]} placements left.")
                 print("===============================")
                 if is_done:
                     gamble_done = True
@@ -1267,6 +1299,7 @@ def main():
                 time.sleep(5)
 
 def disconnect_checker():
+    time.sleep(60) # intial detect delay
     while True:
        if bt.does_exist("Winter\\Disconnected.png",confidence=0.9,grayscale=True,region=(525,353,972,646)) or bt.does_exist("Winter\\Disconnect_Two.png",confidence=0.9,grayscale=True,region=(525,353,972,646)):
         print("found disconnected")
@@ -1274,21 +1307,77 @@ def disconnect_checker():
             args = list(sys.argv)
             if "--stopped" in args:
                 args.remove("--stopped")
+            if "--restart" in args:
+                args.remove("--restart")    
             sys.stdout.flush()
-            subprocess.Popen([sys.executable, *sys.argv])
-            sys.exit(0)
+            subprocess.Popen([sys.executable, *args])
+            os._exit(0)
         except Exception as e:
             print("Error")
         time.sleep(6)
 def on_disconnect():
+    #win32 bindings using ctypes
+    # FUCK CTYPS THIS HSIT IS CANCER RWHAT THE FUCK IS IT DOING 
+    psapi = ctypes.WinDLL("Psapi.dll")
+    kernel32 = ctypes.WinDLL("kernel32.dll")
+    EnumProcesses = psapi.EnumProcesses
+    EnumProcesses.argtypes = [ctypes.POINTER(ctypes.wintypes.DWORD), ctypes.wintypes.DWORD, ctypes.POINTER(ctypes.wintypes.DWORD)]
+    EnumProcesses.restype = ctypes.wintypes.BOOL
+    OpenProcess = kernel32.OpenProcess
+    OpenProcess.argtypes = [ctypes.wintypes.DWORD, ctypes.wintypes.BOOL, ctypes.wintypes.DWORD]
+    OpenProcess.restype = ctypes.wintypes.HANDLE
+    QueryFullProcessImageNameW = kernel32.QueryFullProcessImageNameW
+    QueryFullProcessImageNameW.argtypes = [ctypes.wintypes.HANDLE, ctypes.wintypes.DWORD, ctypes.wintypes.LPWSTR, ctypes.POINTER(ctypes.wintypes.DWORD)]
+    QueryFullProcessImageNameW.restype = ctypes.wintypes.BOOL
+    CloseHandle = kernel32.CloseHandle
+    PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+    def get_exe_path(pid):
+        handle = ctypes.windll.kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        buf = ctypes.create_unicode_buffer(260)
+        size = ctypes.wintypes.DWORD(len(buf))
+        path = ctypes.windll.kernel32.QueryFullProcessImageNameW(handle,0,buf,ctypes.byref(size))
+        CloseHandle(handle)
+        return buf.value if path else None
+    def find_roblox_pid():
+        arr = (ctypes.wintypes.DWORD*4096)()
+        needed = ctypes.wintypes.DWORD()
+        if not EnumProcesses(arr,ctypes.sizeof(arr),ctypes.byref(needed)):
+            return []
+        count = needed.value // ctypes.sizeof(ctypes.wintypes.DWORD)
+        pids = arr[:count]
+        match = []
+        for pid in pids:
+            path = get_exe_path(pid)
+            if not path:
+                continue
+            exe = os.path.basename(path).lower()
+            if exe == "robloxplayerbeta.exe":
+                match.append(pid)
+        return match
+    pid = find_roblox_pid()
+    roblox_exe = get_exe_path(pid=pid[0])
+    subprocess.Popen([roblox_exe, f"roblox://placeId={16146832113}&linkCode={PRIVATE_SERVER_CODE}/"])
+    time.sleep(10)
+    try:
+        window = None
+        while window is None:
+            find_title = next(filter(lambda p: "Roblox" in p, gw.getAllTitles()))
+            window = gw.getWindowsWithTitle(find_title)[0]
+            time.sleep(2)
+        #<Win32Window left="200", top="161", width="1100", height="800", title="Roblox">
+        window.left=200
+        window.top=100
+        window.width=1100
+        window.height=800
+    except Exception as e:
+        print(f"error when resize: {e}")
     while not bt.does_exist("Winter\\AreaIcon.png",confidence=0.8,grayscale=False):
-        click(849,596,delay=0.1)
-        time.sleep(2)
-        click(752, 548,delay=0.2)
-        time.sleep(2)
-        click(1083,321,delay=0.1)
-        time.sleep(2)
+        if pyautogui.pixelMatchesColor(1085,321,(255,255,255),tolerance=5):  
+            click(1083,321,delay=0.1)
+        time.sleep(1)
     time.sleep(1)
+    if pyautogui.pixelMatchesColor(1085,321,(255,255,255),tolerance=5):  
+            click(1083,321,delay=0.1)
     bt.click_image("Winter\\AreaIcon.png",confidence=0.8,grayscale=False,offset=(0,0))
     time.sleep(3)
     open_menu = False
@@ -1300,25 +1389,18 @@ def on_disconnect():
     while not open_menu:
         click(656,764,delay=0.1)
         time.sleep(1)
-        keyboard.press('w')
-        time.sleep(0.3)
-        keyboard.release('w')
         keyboard.press('a')
-        time.sleep(0.3)
+        time.sleep(1)
         keyboard.release('a')
         Thread(target=spam_e).start()
         keyboard.press('a')
         time.sleep(1)
         keyboard.release('a')
-        if pyautogui.pixelMatchesColor(884,266,(170,232,235),tolerance=8):
+        if pyautogui.pixelMatchesColor(888,269,(165, 232, 235),tolerance=30):
             open_menu = True
         if not open_menu:
-            click(849,596,delay=0.1)
-            time.sleep(2)
-            click(752, 548,delay=0.2)
-            time.sleep(2)
-            click(1083,321,delay=0.1)
-            time.sleep(2)
+            if pyautogui.pixelMatchesColor(1085,321,(255,255,255),tolerance=5):  
+                click(1083,321,delay=0.1)
             bt.click_image("Winter\\AreaIcon.png",confidence=0.8,grayscale=False,offset=(0,0))
         time.sleep(3)
     # [(454, 703), (659, 509), (301, 676)]
@@ -1330,6 +1412,7 @@ def on_disconnect():
     time.sleep(2)
     wait_start()
     wait_start()
+    wait_start()
     keyboard.press('i')
     time.sleep(1)
     keyboard.release('i')
@@ -1339,16 +1422,33 @@ def on_disconnect():
     keyboard.release('o')      
     click(488, 463,delay=0.2)
 
-
+if "--restart" in sys.argv:
+    on_disconnect()
+    
+Thread(target=disconnect_checker).start()
+print(f"Launched with args {sys.argv}")
 print(f"Running loxer's winter macro v{VERSION_N}")
 if bt.does_exist("Winter\\Disconnected.png",confidence=0.9,grayscale=True,region=(525,353,972,646)) or  bt.does_exist("Winter\\Disconnect_Two.png",confidence=0.9,grayscale=True,region=(525,353,972,646)):
     on_disconnect()
     time.sleep(6)
-if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=10) or pyautogui.pixelMatchesColor(690,270,(199, 45, 40),tolerance=5):
+if pyautogui.pixelMatchesColor(690,270,(242,25,28),tolerance=10) or pyautogui.pixelMatchesColor(690,270,(199, 45, 40),tolerance=5) or bt.does_exist("Winter\\DetectLoss.png",confidence=0.7,grayscale=True,region=(311, 295, 825, 428)):
     on_failure()
     time.sleep(6)
 Thread(target=detect_loss).start()
-Thread(target=disconnect_checker).start()
+try:
+    window = None
+    while window is None:
+        find_title = next(filter(lambda p: "Roblox" in p, gw.getAllTitles()))
+        window = gw.getWindowsWithTitle(find_title)[0]
+    time.sleep(1)
+    #<Win32Window left="200", top="100", width="1100", height="800", title="Roblox">
+    if window.left == 200 and window.top == 100 and window.width == 1100 and window.height == 800:
+        print("Roblox is positioned correctly")
+    else:
+        print("Roblox is not positioned correctly, please run position.py")
+        sys.exit(0)
+except Exception as e:
+    print(f"error check window {e}")
 if Settings.AUTO_START:
     if not "--stopped" in sys.argv:
         g_toggle = True
