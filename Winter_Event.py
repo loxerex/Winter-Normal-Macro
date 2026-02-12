@@ -16,7 +16,7 @@ import subprocess
 import json
 import pygetwindow as gw
 
-VERSION_N = '1.5alpha'
+VERSION_N = '1.49999'
 
 class Cur_Settings: pass
 
@@ -1145,7 +1145,7 @@ def main():
                         print("SellBuu")
                         keyboard.press_and_release('x')
                         break
-                    if not bt.does_exist("Winter\\Unit_Maxed.png",confidence=0.8,grayscale=False):
+                    if not bt.does_exist("Unit_Maxed.png",confidence=0.8,grayscale=False):
                         print("Upgrade")
                         keyboard.press_and_release('t')
                         time.sleep(.1)           
