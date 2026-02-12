@@ -16,7 +16,7 @@ import subprocess
 import json
 import pygetwindow as gw
 
-VERSION_N = '1.5alpha'
+VERSION_N = '1.5alpha2'
 
 class Cur_Settings: pass
 
@@ -1488,6 +1488,8 @@ def on_disconnect():
     time.sleep(2)
     click(659, 509,delay=0.1)
     time.sleep(2)
+    click(745, 560,delay=0.1)
+    time.sleep(2)
     click(301, 676,delay=0.1)
     time.sleep(2)
     wait_start()
@@ -1560,4 +1562,5 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
+
 
