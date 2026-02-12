@@ -1079,6 +1079,7 @@ def main():
                         click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
                         time.sleep(1)
                         if USE_BUU:
+                            secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
                             while True:
                                 if bt.does_exist("Winter\\Buu_Ability.png",confidence=0.5,grayscale=False):
                                     print("Found Ability")
@@ -1562,6 +1563,7 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
+
 
 
 
