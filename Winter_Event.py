@@ -1078,6 +1078,24 @@ def main():
                         time.sleep(1)
                         click(ainz_pos[0][0],ainz_pos[0][1],delay=0.2)
                         time.sleep(1)
+                        if USE_BUU:
+                            while True:
+                                if bt.does_exist("Winter\\Buu_Ability.png",confidence=0.5,grayscale=False):
+                                    print("Found Ability")
+                                    bt.click_image("Winter\\Buu_Ability.png",confidence=0.5,grayscale=False,offset=(0,0))
+                                    time.sleep(1)
+                                    click(441,151,0.2)
+                                    time.sleep(1)
+                                    secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
+                                    time.sleep(1)
+                                if bt.does_exist("Winter\\BuuSellDetect.png",confidence=0.8,grayscale=False):
+                                    print("SellBuu")
+                                    keyboard.press_and_release('x')
+                                    break
+                                if not bt.does_exist("Unit_Maxed.png",confidence=0.8,grayscale=False):
+                                    print("Upgrade")
+                                    keyboard.press_and_release('t')
+                                    time.sleep(0.5)           
                         # go gamble more son
                         directions('3')
                 print("===============================")
@@ -1131,24 +1149,6 @@ def main():
                     time.sleep(0.5)
                 time.sleep(0.5)
                 click(607, 381, delay=0.2)
-            elif USE_BUU:
-                secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
-                time.sleep(1)
-                while True:
-                    if bt.does_exist("Winter\\Buu_Ability.png",confidence=0.5,grayscale=False):
-                        print("Found Ability")
-                        bt.click_image("Winter\\Buu_Ability.png",confidence=0.5,grayscale=False,offset=(0,0))
-                        time.sleep(1)
-                        click(441,151,0.2)
-                        time.sleep(1)
-                    if bt.does_exist("Winter\\BuuSellDetect.png",confidence=0.8,grayscale=False, ):
-                        print("SellBuu")
-                        keyboard.press_and_release('x')
-                        break
-                    if not bt.does_exist("Unit_Maxed.png",confidence=0.8,grayscale=False):
-                        print("Upgrade")
-                        keyboard.press_and_release('t')
-                        time.sleep(.1)           
             elif Settings.MAX_UPG_AINZ_PLACEMENT == False:
                 secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
                 time.sleep(1)
@@ -1562,5 +1562,6 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
+
 
 
