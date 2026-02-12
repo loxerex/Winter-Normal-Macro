@@ -16,7 +16,7 @@ import subprocess
 import json
 import pygetwindow as gw
 
-VERSION_N = '1.4999'
+VERSION_N = '1.49999'
 
 class Cur_Settings: pass
 
@@ -24,6 +24,8 @@ global Settings
 Settings = Cur_Settings()
 
 USE_KAGUYA = False
+
+USE_BUU = False # Thanks to Doomgus for getting images for this strat to work :steamhappy:
 
 PRIVATE_SERVER_CODE = "" # Not in settings so u dont accidently share ur ps lol
 
@@ -1032,6 +1034,8 @@ def main():
                             ainz_setup(unit="world des")
                         elif Settings.USE_DIO == True:
                             ainz_setup(unit="god")
+                        elif USE_BUU:
+                            ainz_setup(unit="boo")
                         else:
                             ainz_setup(unit=Settings.USE_AINZ_UNIT)
                         global AINZ_SPELLS
@@ -1127,6 +1131,24 @@ def main():
                     time.sleep(0.5)
                 time.sleep(0.5)
                 click(607, 381, delay=0.2)
+            elif USE_BUU:
+                secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
+                time.sleep(1)
+                while True:
+                    if bt.does_exist("Winter\\Buu_Ability.png",confidence=0.5,grayscale=False):
+                        print("Found Ability")
+                        bt.click_image("Winter\\Buu_Ability.png",confidence=0.5,grayscale=False,offset=(0,0))
+                        time.sleep(1)
+                        click(441,151,0.2)
+                        time.sleep(1)
+                    if bt.does_exist("Winter\\BuuSellDetect.png",confidence=0.8,grayscale=False, ):
+                        print("SellBuu")
+                        keyboard.press_and_release('x')
+                        break
+                    if not bt.does_exist("Winter\\Unit_Maxed.png",confidence=0.8,grayscale=False):
+                        print("Upgrade")
+                        keyboard.press_and_release('t')
+                        time.sleep(.1)           
             elif Settings.MAX_UPG_AINZ_PLACEMENT == False:
                 secure_select(Settings.Unit_Positions.get("Caloric_Unit"))
                 time.sleep(1)
