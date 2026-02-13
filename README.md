@@ -1,5 +1,5 @@
 ---
-## Recent Update 1.3
+## Recent Update 1.5
 - Check discord for changelog
 - https://discord.gg/rbWmQdKZka
 ---
@@ -11,7 +11,7 @@ An anime vanguards macro for the winter normal LTM mode
 # What is this?
 This contains updated versions of `winter_event.py` and the images.  
 For the rest of the files download from:  
-- https://u.pcloud.link/publink/show?code=XZunpl5ZrG0vX3NNTsfCwzmkzPR81F9eAJIy
+- https://u.pcloud.link/publink/show?code=XZVhml5ZkKM65B8VKoVgAJIHFzd6C4rrxmcy
 
 # Update Guide
 https://www.youtube.com/watch?v=CVOwMsYfJZM
