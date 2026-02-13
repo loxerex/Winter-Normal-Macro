@@ -28,7 +28,7 @@ def save_info(data):
         json.dump(data, f, indent=4)     
 start = datetime.now()
 
-VERSION_N = '1.5'
+VERSION_N = '1.51'
 
 class Cur_Settings: pass
 
@@ -1575,6 +1575,7 @@ else:
     keyboard.press_and_release('s')
     keyboard.press_and_release('d')
     main()
+
 
 
 
